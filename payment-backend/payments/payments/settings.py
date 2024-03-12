@@ -133,7 +133,7 @@ REST_FRAMEWORK = {
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Payments API',
-    'DESCRIPTION': 'Your project description',
+    'DESCRIPTION': 'API for Payments',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
     # OTHER SETTINGS
