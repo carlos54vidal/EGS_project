@@ -22,6 +22,8 @@ from drf_spectacular.views import SpectacularRedocView, SpectacularSwaggerView
 
 from payment_api.routers import router
 
+from . import views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
@@ -30,4 +32,7 @@ urlpatterns = [
     path('docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     # Redoc UI:
     path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+
+    path('payment/', views.payment, name='payment'),
+    # path('process_payment/<str:client_secret>/', views.process_payment, name='process_payment'),
 ]

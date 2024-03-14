@@ -12,8 +12,12 @@ class Payments(models.Model):
         PAYPAL = 'P', 'Paypal'
         OTHER = 'O', 'Others'
 
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.CharField(max_length=100)
+    paid = models.BooleanField(default=False)
     name = models.CharField(max_length=120)
-    type = models.CharField(max_length=5, choices=Type.choices, blank=True)
+    type = models.CharField(max_length=5, choices=Type.choices, blank=True)    
+    client_unique_key = models.CharField(max_length=300)
     is_active = models.BooleanField(default=True)
     status = models.IntegerField(choices=Status.choices, default=Status.ACTIVE)
     created_at = models.DateTimeField(auto_now_add=True)
