@@ -7,12 +7,14 @@ import {
   Param,
   Delete,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { ApiSecurity, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
+import { Request } from 'express';
 
 @ApiSecurity('Api-Key')
 @ApiTags('Booking')
@@ -26,15 +28,17 @@ export class BookingsController {
     summary: 'Add a new booking',
     description: 'Update an existing booking by Id',
   })
-  create(@Body() data: CreateBookingDto) {
-    return this.bookingsService.create(data);
+  create(@Req() request: Request, @Body() data: CreateBookingDto) {
+    const apikey = request.headers['api-key'];
+    return this.bookingsService.create(apikey, data);
   }
 
   @Get()
   @UseGuards(AuthGuard('headerapikey'))
   @ApiOperation({ summary: 'Get all bookings' })
-  findAll() {
+  findAll(@Req() request: Request) {
     console.log('Bookings Controller - findAll');
+    const apikey = request.headers['api-key'];
     return this.bookingsService.findAll();
   }
 

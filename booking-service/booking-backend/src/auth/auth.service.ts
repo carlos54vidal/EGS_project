@@ -5,8 +5,6 @@ import { ClientsService } from 'src/clients/clients.service';
 export class AuthService {
   constructor(private readonly clientsService: ClientsService) {}
 
-  //private apiKey: string = '12345';
-
   // Check if the api-key exists for a specific client
   async validateApiKey(apiKey: string): Promise<boolean> {
     //validateApiKey(apiKey: string): boolean {
@@ -20,11 +18,6 @@ export class AuthService {
       console.log('Valid !! ');
       return true;
     }
-
-    // if (this.apiKey === apiKey) {
-    //   console.log('Valid !! ');
-    //   return true;
-    // }
 
     return false;
   }

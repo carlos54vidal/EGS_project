@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Client } from 'src/clients/entities/client.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Booking {
@@ -13,4 +20,8 @@ export class Booking {
 
   @Column({ type: 'varchar', length: 50 })
   description: string;
+
+  @ManyToOne(() => Client, (client) => client.booking)
+  @JoinColumn({ name: 'clientId' })
+  client: Client;
 }

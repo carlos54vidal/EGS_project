@@ -46,7 +46,7 @@ export class ClientsService {
   }
 
   async findOne(id: string): Promise<any> {
-    // Find shop
+    // Find Client
     try {
       const client = await this.clientRepository.findOneBy({ apikey: id });
       return client;

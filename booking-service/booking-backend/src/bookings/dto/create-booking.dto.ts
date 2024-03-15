@@ -12,7 +12,7 @@ export class CreateBookingDto {
 
   @ApiProperty()
   @IsInt()
-  durarion: number;
+  duration: number;
 
   @ApiProperty()
   @IsString()

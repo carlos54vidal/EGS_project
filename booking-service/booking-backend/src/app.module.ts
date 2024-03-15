@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Client } from './clients/entities/client.entity';
 import { AuthModule } from './auth/auth.module';
+import { Booking } from './bookings/entities/booking.entity';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { AuthModule } from './auth/auth.module';
       database: 'bookingservice',
       logging: true,
       synchronize: true,
-      entities: [Client],
+      entities: [Client, Booking],
       //autoLoadEntities: true,
     }),
     BookingsModule,
