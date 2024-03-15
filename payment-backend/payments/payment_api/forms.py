@@ -1,10 +1,10 @@
 # forms.py
 from django import forms
-from .models import Payment
+from .models import Payments
 
 class PaymentForm(forms.ModelForm):
     class Meta:
-        model = Payment
+        model = Payments
         fields = ('amount', 'description',)
         widgets = {
             'amount': forms.NumberInput(attrs={'class': 'form-control'}),

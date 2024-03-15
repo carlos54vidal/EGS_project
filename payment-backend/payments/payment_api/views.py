@@ -11,6 +11,8 @@ class PaymentsViewSet(viewsets.ModelViewSet):
     serializer_class = PaymentsSerializer
 
 def payment(request):
+    print(request.headers)
+
     form = PaymentForm(request.POST or None)
 
     if request.method == "POST":

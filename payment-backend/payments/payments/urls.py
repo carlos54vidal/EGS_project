@@ -22,7 +22,7 @@ from drf_spectacular.views import SpectacularRedocView, SpectacularSwaggerView
 
 from payment_api.routers import router
 
-from . import views
+from payment_api import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
