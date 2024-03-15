@@ -1,17 +1,31 @@
 import { Injectable } from '@nestjs/common';
+import { ClientsService } from 'src/clients/clients.service';
 
 @Injectable()
 export class AuthService {
-  // KEYS
-  //   private apiKeys: string[] = [
-  //     'ca03na188ame03u1d78620de67282882a84',
-  //     'd2e621a6646a4211768cd68e26f21228a81',
-  //   ];
+  constructor(private readonly clientsService: ClientsService) {}
 
-  private apiKey: string = '12345';
+  //private apiKey: string = '12345';
 
-  validateApiKey(apiKey: string): boolean {
-    // return this.apiKeys.find((key) => key === apiKey);
-    return this.apiKey === apiKey;
+  // Check if the api-key exists for a specific client
+  async validateApiKey(apiKey: string): Promise<boolean> {
+    //validateApiKey(apiKey: string): boolean {
+    console.log('\nAuth Service: ');
+    console.log('apiKey: ' + apiKey);
+    console.log('Auth - Validating api-key...');
+
+    const clientExists = await this.clientsService.findOne(apiKey);
+    console.log(clientExists);
+    if (clientExists) {
+      console.log('Valid !! ');
+      return true;
+    }
+
+    // if (this.apiKey === apiKey) {
+    //   console.log('Valid !! ');
+    //   return true;
+    // }
+
+    return false;
   }
 }

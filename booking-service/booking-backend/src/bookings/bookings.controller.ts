@@ -16,7 +16,7 @@ import { UpdateBookingDto } from './dto/update-booking.dto';
 
 @ApiSecurity('Api-Key')
 @ApiTags('Booking')
-@Controller()
+@Controller('bookings')
 export class BookingsController {
   constructor(private readonly bookingsService: BookingsService) {}
 
@@ -34,6 +34,7 @@ export class BookingsController {
   @UseGuards(AuthGuard('headerapikey'))
   @ApiOperation({ summary: 'Get all bookings' })
   findAll() {
+    console.log('Bookings Controller - findAll');
     return this.bookingsService.findAll();
   }
 
