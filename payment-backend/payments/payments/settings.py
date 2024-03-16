@@ -51,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'payment_api.middleware.middleware.PaymentsMiddleware',
 ]
 
 ROOT_URLCONF = 'payments.urls'
@@ -122,8 +123,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
-    BASE_DIR / "static",
-    "payments/payment_api/static/",
+    BASE_DIR /  "payment_api/static",
 ]
 
 # Default primary key field type
