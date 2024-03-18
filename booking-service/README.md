@@ -1,3 +1,11 @@
+## Booking Frontend
+
+### Running the app
+```bash
+$ npm run dev
+```
+
+
 ## Booking Backend
 
 ### Dependencies
