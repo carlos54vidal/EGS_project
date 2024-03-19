@@ -12,6 +12,12 @@ $ npm i axios
 $ npm run dev
 ```
 
+### Access the client register to create api-key
+```bash
+# url
+http://localhost:3000
+```
+
 ## Booking Backend
 
 ### Dependencies
@@ -35,4 +41,10 @@ $ npm run start
 
 # watch mode
 $ npm run start:dev
+```
+
+### Access the booking API
+```bash
+# url
+http://localhost:4001/api
 ```
