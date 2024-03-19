@@ -2,7 +2,11 @@
 import React, { useState, FormEvent } from "react";
 import axios from "axios";
 
-export default function SignUp() {
+export default function SignUp({
+  handleAlert,
+}: {
+  handleAlert: (open: boolean) => void;
+}) {
   // State to hold the value of the text field
   const [companyName, setCompanyName] = useState("");
 
@@ -16,24 +20,43 @@ export default function SignUp() {
   // Event handler to handle form submission
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    registerClient(companyName);
+    registerClient(companyName)
+      .then((status) => {
+        console.log("Registration status:", status);
+        setCompanyName(""); // reset field
+        handleAlert(true); // Show success alert
+      })
+      .catch((error) => {
+        console.error("Failed to register client:", error);
+      });
   };
 
-  // Insert the list of ingredients into the stock table (POST request)
-  const registerClient = async (name: string) => {
+  // POST - Register client
+  const registerClient = async (name: string): Promise<number> => {
     const url = "http://localhost:4001/v1/clients";
     const config = { "Content-Type": "application/json" };
 
     try {
       const data = { clientName: name };
       await axios.post(url, data, { headers: config });
-    } catch (error) {
+      // If the request is successful, return status code 200
+      return 200;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          // If there's an error response, return the status code from it
+          return error.response.status;
+        }
+      }
       console.error("Error registering client.", error);
+      // Default to 500 if no status is available
+      return 500;
     }
   };
 
   return (
     <>
+      {/* Render success alert if showSuccess is true */}
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
@@ -78,7 +101,7 @@ export default function SignUp() {
                 href="#"
                 className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
               >
-                Start a 14 day free trial
+                Start now for FREE !
               </a>
             </p>
           </div>
