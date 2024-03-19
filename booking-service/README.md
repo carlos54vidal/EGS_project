@@ -1,10 +1,16 @@
 ## Booking Frontend
 
+### Dependencies
+
+```bash
+$ npm i axios
+```
+
 ### Running the app
+
 ```bash
 $ npm run dev
 ```
-
 
 ## Booking Backend
 
