@@ -37,41 +37,52 @@ export class BookingsController {
   @UseGuards(AuthGuard('headerapikey'))
   @ApiOperation({ summary: 'Get all bookings' })
   findAll(@Req() request: Request) {
-    console.log('Bookings Controller - findAll');
     const apikey = request.headers['api-key'];
-    return this.bookingsService.findAll();
+    return this.bookingsService.findAll(apikey);
   }
 
   @Get('free')
+  @UseGuards(AuthGuard('headerapikey'))
   @ApiOperation({ summary: 'Get all available bookings' })
-  findFree() {
-    return this.bookingsService.findAll();
+  findFree(@Req() request: Request) {
+    const apikey = request.headers['api-key'];
+    return this.bookingsService.findAll(apikey);
   }
 
-  @Get('busy')
-  @ApiOperation({ summary: 'Get all busy bookings' })
-  findBusy() {
-    return this.bookingsService.findAll();
-  }
+  // @Get('busy')
+  // @ApiOperation({ summary: 'Get all busy bookings' })
+  // findBusy() {
+  //   return this.bookingsService.findAll();
+  // }
 
   @Get(':uuid')
+  @UseGuards(AuthGuard('headerapikey'))
   @ApiOperation({ summary: 'Get a booking by uuid' })
-  findOne(@Param('uuid') uuid: string) {
-    return this.bookingsService.findOne(+uuid);
+  findOne(@Req() request: Request, @Param('uuid') id: string) {
+    const apikey = request.headers['api-key'];
+    return this.bookingsService.findOne(apikey, id);
   }
 
   @Patch(':uuid')
+  @UseGuards(AuthGuard('headerapikey'))
   @ApiOperation({
     summary: 'Edit a booking by uuid',
     description: 'Update an existing booking by Id',
   })
-  update(@Param('uuid') uuid: string, @Body() data: UpdateBookingDto) {
-    return this.bookingsService.update(+uuid, data);
+  update(
+    @Req() request: Request,
+    @Param('uuid') id: string,
+    @Body() data: UpdateBookingDto,
+  ) {
+    const apikey = request.headers['api-key'];
+    return this.bookingsService.update(apikey, id, data);
   }
 
   @Delete(':uuid')
+  @UseGuards(AuthGuard('headerapikey'))
   @ApiOperation({ summary: 'Remove a booking by uuid' })
-  remove(@Param('uuid') uuid: string) {
-    return this.bookingsService.remove(+uuid);
+  remove(@Req() request: Request, @Param('uuid') id: string) {
+    const apikey = request.headers['api-key'];
+    return this.bookingsService.remove(apikey, id);
   }
 }
