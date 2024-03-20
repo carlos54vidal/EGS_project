@@ -17,7 +17,7 @@ class Payments(models.Model):
     paid = models.BooleanField(default=False)
     name = models.CharField(max_length=120)
     type = models.CharField(max_length=5, choices=Type.choices, blank=True)    
-    client_unique_key = models.CharField(max_length=300)
+    client_unique_key = models.CharField(max_length=300, default='')
     is_active = models.BooleanField(default=True)
     status = models.IntegerField(choices=Status.choices, default=Status.ACTIVE)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -27,15 +27,23 @@ class Clients(models.Model):
 
     name = models.CharField(max_length=300)
 
-    MY_CHOICES = (
+    PLAN_CHOICES = (
         ('a', 'Standard'),
         ('b', 'Premium'),
         ('c', 'Premium Plus')
     )
 
-    membership_plan = models.CharField(max_length=1, choices=MY_CHOICES)
+    membership_plan = models.CharField(max_length=1, choices=PLAN_CHOICES)
 
     unique_key = models.CharField(max_length=300)
+
+    STATE_CHOICES = (
+        ('a', 'Active'),
+        ('i', 'Inactive'),
+        ('s', 'Suspended')
+    )
+
+    state = models.CharField(max_length=1, choices=STATE_CHOICES, default='Inactive')
 
     class Meta:
 

@@ -13,9 +13,10 @@ class ClientsAdmin(admin.ModelAdmin):
         'name',
         'membership_plan',
         'unique_key',
+        'state'
     )
 
-    list_display = ['name', 'membership_plan', 'unique_key']
+    list_display = ['name', 'membership_plan', 'unique_key', 'state']
 
     list_filter = ['membership_plan']
 
