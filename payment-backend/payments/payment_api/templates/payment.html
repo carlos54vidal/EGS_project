@@ -12,28 +12,99 @@
 			background-color: #f0f0f0;
 			
 		}
+		h1{text-align: center;}
+		h2{text-align: center;}
 
-	</style>
+	</style>		
+
 </head>
 <body>
 	<div class="container">
 		<div class="row">
 			<div class="col-lg">
-				<br>
-				<img src="{{product.image_url}}">
+				
 			</div>
 			<div class="col-lg">
 				<br>
 				<div class="card card-body">
-					<h3>{{payments.name}}</h3>
+					<h1>{{payments.name}}</h1>
 					<hr>
-					<h4>Total: ${{payments.amount}}</h4>
+					<h2>Total: {{payments.amount}}€</h2>
 					<hr>
 					<div id="paypal-button-container"></div>
 				</div>
 			</div>
+			<div class="col-lg">
+				
+			</div>
 		</div>
 	</div>
+	<script src="https://www.paypalobjects.com/api/checkout.js"></script>
 
+	<div id="paypal-button-container"></div>
+	
+	<script>
+
+		var total = '{{payments.amount}}'
+	
+		// Render the PayPal button
+	
+		paypal.Button.render({
+	
+			// Set your environment
+	
+			env: 'sandbox', // sandbox | production
+	
+			// Specify the style of the button
+	
+			style: {
+				layout: 'vertical',  // horizontal | vertical
+				size:   'responsive',    // medium | large | responsive
+				shape:  'rect',      // pill | rect
+				color:  'blue'       // gold | blue | silver | black
+			},
+	
+			// Specify allowed and disallowed funding sources
+			//
+			// Options:
+			// - paypal.FUNDING.CARD
+			// - paypal.FUNDING.CREDIT
+			// - paypal.FUNDING.ELV
+	
+			funding: {
+				allowed: [ paypal.FUNDING.CARD, paypal.FUNDING.CREDIT ],
+				disallowed: [ ]
+			},
+	
+			// PayPal Client IDs - replace with your own
+			// Create a PayPal app: https://developer.paypal.com/developer/applications/create
+	
+			client: {
+				sandbox:    'AZDxjDScFpQtjWTOUtWKbyN_bDt4OgqaF4eYXlewfBP4-8aqX3PiV8e1GWU6liB2CUXlkA59kJXE7M6R',
+				production: '<insert production client id>'
+			},
+	
+			payment: function(data, actions) {
+				return actions.payment.create({
+					payment: {
+						transactions: [
+							{
+								amount: { total: total, currency: 'EUR' }
+							}
+						]
+					}
+				});
+			},
+	
+			onAuthorize: function(data, actions) {
+				return actions.payment.execute().then(function() {
+					window.alert('Payment Complete!');
+				});
+			}
+	
+		}, '#paypal-button-container');
+	
+	</script>
+		
 </body>
 </html>

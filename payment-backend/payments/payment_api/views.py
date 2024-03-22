@@ -10,9 +10,16 @@ class PaymentsViewSet(viewsets.ModelViewSet):
     queryset = Payments.objects.all()
     serializer_class = PaymentsSerializer
 
-def payment(request):
+def payment(request,pay_name):
     print(request.headers)
 
+    # Paypal
+    payments = Payments.objects.get(name=pay_name)
+    context = {'payments':payments}
+    return render (request, 'payment.html', context)
+    # End Paypal
+    
+    '''
     form = PaymentForm(request.POST or None)
 
     if request.method == "POST":
@@ -21,20 +28,20 @@ def payment(request):
             payment.user = request.user
             payment.save()
 
-            '''# Create a Stripe PaymentIntent
+            # Create a Stripe PaymentIntent
             stripe.api_key = settings.STRIPE_PRIVATE_KEY
             intent = stripe.PaymentIntent.create(
                 amount=int(payment.amount * 100),
                 currency='usd',
                 metadata={'payment_id': payment.id}
-            )'''
+            )
 
             # Redirect to the payment processing view
             return redirect('process_payment', intent.client_secret)
 
     context = {'form': form}
     return render(request, 'payment.html', context)
-
+    '''
 def process_payment(request, client_secret):
     if request.method == "POST":
         '''stripe.api_key = settings.STRIPE_PRIVATE_KEY

@@ -33,6 +33,6 @@ urlpatterns = [
     # Redoc UI:
     path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 
-    path('payment/', views.payment, name='payment'),
+    path('payment/<str:pay_name>/', views.payment, name='payment'),
     # path('process_payment/<str:client_secret>/', views.process_payment, name='process_payment'),
 ]
