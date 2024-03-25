@@ -5,6 +5,10 @@ from .models import Payments
 from .serializers import PaymentsSerializer
 from .forms import PaymentForm
 
+from .models import Clients
+from .serializers import ClientsSerializer
+#from .forms import ClientsForm
+
 # Create your views here.
 class PaymentsViewSet(viewsets.ModelViewSet):
     queryset = Payments.objects.all()
@@ -42,6 +46,12 @@ def payment(request,pay_name):
     context = {'form': form}
     return render(request, 'payment.html', context)
     '''
+class ClientsViewSet(viewsets.ViewSet):
+    queryset = Clients.objects.all()
+    serializer_class = ClientsSerializer
+
+
+
 def process_payment(request, client_secret):
     if request.method == "POST":
         '''stripe.api_key = settings.STRIPE_PRIVATE_KEY

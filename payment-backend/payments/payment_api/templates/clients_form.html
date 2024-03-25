@@ -1,0 +1,26 @@
+<!-- clients_form.html -->
+<form method="post" action="{% url 'clients' %}">
+    {% csrf_token %}
+    
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name">
+
+    <label for="membership_plan">Membership Plan:</label>
+    <select id="membership_plan" name="membership_plan">
+        <option value="a">Standard</option>
+        <option value="b">Premium</option>
+        <option value="c">Premium Plus</option>
+    </select>
+
+    <label for="unique_key">Unique Key:</label>
+    <input type="text" id="unique_key" name="unique_key">
+
+    <label for="state">State:</label>
+    <select id="state" name="state">
+        <option value="a">Active</option>
+        <option value="i">Inactive</option>
+        <option value="s">Suspended</option>
+    </select>
+
+    <button type="submit">Submit</button>
+</form>

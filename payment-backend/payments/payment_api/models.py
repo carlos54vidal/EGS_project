@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 
 # Create your models here.
 
@@ -17,7 +18,12 @@ class Payments(models.Model):
     paid = models.BooleanField(default=False)
     name = models.CharField(max_length=120)
     type = models.CharField(max_length=5, choices=Type.choices, blank=True)    
-    client_unique_key = models.CharField(max_length=300, default='')
+    client_unique_key = models.UUIDField(
+        primary_key = False, 
+        default = uuid.uuid4,
+        editable = True,
+        unique=True
+        )
     is_active = models.BooleanField(default=True)
     status = models.IntegerField(choices=Status.choices, default=Status.ACTIVE)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -35,7 +41,12 @@ class Clients(models.Model):
 
     membership_plan = models.CharField(max_length=1, choices=PLAN_CHOICES)
 
-    unique_key = models.CharField(max_length=300)
+    unique_key = models.UUIDField(
+        primary_key = False, 
+        default = uuid.uuid4,
+        editable = True,
+        unique=True
+        )
 
     STATE_CHOICES = (
         ('a', 'Active'),

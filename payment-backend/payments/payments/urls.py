@@ -24,6 +24,8 @@ from payment_api.routers import router
 
 from payment_api import views
 
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
@@ -35,4 +37,7 @@ urlpatterns = [
 
     path('payment/<str:pay_name>/', views.payment, name='payment'),
     # path('process_payment/<str:client_secret>/', views.process_payment, name='process_payment'),
+
+    # URL pattern for the form
+    path('registration/', views.Clients, name='clients'),
 ]
