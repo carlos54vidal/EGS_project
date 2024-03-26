@@ -1,26 +1,78 @@
 <!-- clients_form.html -->
-<form method="post" action="{% url 'clients' %}">
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Store</title>
+	<meta id="meta" name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+
+	<style type="text/css">
+		body{
+			background-color: #f0f0f0;
+			
+		}
+		h1{text-align: center;}
+		h2{text-align: center;}
+
+	</style>		
+
+</head>
+<body>
+<form method="post" action="{% url 'registration' %}" enctype="multipart/form-data">
     {% csrf_token %}
     
-    <label for="name">Name:</label>
-    <input type="text" id="name" name="name">
+    <div class="row">
+        <div class="col-12 col-xl-8">
+            <div class="card card-body bg-white border-light shadow-sm mb-4">
+                <h2 class="h5 mb-4">Profile information</h2>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div>
+                            <label for="name">Name:</label>
+                            <input type="text" id="name" name="name">
+                        </div>
+                    </div>                            
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <label for="membership_plan">Membership Plan:</label>
+                            <select id="membership_plan" name="membership_plan">
+                                <option value="a">Standard</option>
+                                <option value="b">Premium</option>
+                                <option value="c">Premium Plus</option>
+                            </select>
+                        </div>
+                    </div>                            
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <label for="unique_key">Unique Key:</label>
+                            <input type="text" id="unique_key" name="unique_key">
+                        </div>
+                    </div>                            
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <label for="state">State:</label>
+                            <select id="state" name="state">
+                                <option value="a">Active</option>
+                                <option value="i">Inactive</option>
+                                <option value="s">Suspended</option>
+                            </select>
 
-    <label for="membership_plan">Membership Plan:</label>
-    <select id="membership_plan" name="membership_plan">
-        <option value="a">Standard</option>
-        <option value="b">Premium</option>
-        <option value="c">Premium Plus</option>
-    </select>
-
-    <label for="unique_key">Unique Key:</label>
-    <input type="text" id="unique_key" name="unique_key">
-
-    <label for="state">State:</label>
-    <select id="state" name="state">
-        <option value="a">Active</option>
-        <option value="i">Inactive</option>
-        <option value="s">Suspended</option>
-    </select>
-
-    <button type="submit">Submit</button>
+                            <button type="submit" class="btn btn-primary">Save All</button>
+                        </div>
+                    </div>                
+                </div>
+            </div>
+        </div>                
+    </div>
 </form>
+</body>
+</html>

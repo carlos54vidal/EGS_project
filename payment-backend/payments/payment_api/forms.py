@@ -11,6 +11,7 @@ class PaymentForm(forms.ModelForm):
             'description': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
+'''
 class ClientsForm(forms.ModelForm):
     name = forms.CharField(max_length=255)
     email = forms.EmailField()
@@ -26,3 +27,4 @@ def form_validation_error(form):
         for error in field.errors:
             msg += "%s: %s \\n" % (field.label if hasattr(field, 'label') else 'Error', error)
     return msg
+'''

@@ -1,9 +1,12 @@
 from django.shortcuts import render, redirect
 from rest_framework import viewsets
+from rest_framework.response import Response
+from rest_framework import status
+#from django.views import View
 
 from .models import Payments
 from .serializers import PaymentsSerializer
-from .forms import PaymentForm
+#from .forms import PaymentForm
 
 from .models import Clients
 from .serializers import ClientsSerializer
@@ -47,9 +50,23 @@ def payment(request,pay_name):
     return render(request, 'payment.html', context)
     '''
 class ClientsViewSet(viewsets.ViewSet):
-    queryset = Clients.objects.all()
-    serializer_class = ClientsSerializer
-
+    
+    def create(self, request):
+        # Perform any necessary validation on request.data if needed
+        
+        # Get or create Clients object
+        client, created = Clients.objects.get_or_create()
+        
+        # Serialize the Clients object
+        serializer = ClientsSerializer(client)
+        
+        # Render the clients_form.html template with the serialized data
+        return render(request, 'clients_form.html', {'client_data': serializer.data})
+    
+    def list(self, request):
+         # Render the clients_form.html template for GET requests
+        return render(request, 'clients_form.html', {})
+        
 
 
 def process_payment(request, client_secret):
