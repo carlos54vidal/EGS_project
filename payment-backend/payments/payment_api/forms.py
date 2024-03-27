@@ -11,14 +11,11 @@ class PaymentForm(forms.ModelForm):
             'description': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
-'''
 class ClientsForm(forms.ModelForm):
-    name = forms.CharField(max_length=255)
-    email = forms.EmailField()
-
     class Meta:
         model = Clients
-        fields = '__all__'
+        email = forms.EmailField(label='Email Address')
+        fields = ['name', 'membership_plan', 'state']  # Specify fields to include in the form
 
 
 def form_validation_error(form):
@@ -27,4 +24,3 @@ def form_validation_error(form):
         for error in field.errors:
             msg += "%s: %s \\n" % (field.label if hasattr(field, 'label') else 'Error', error)
     return msg
-'''

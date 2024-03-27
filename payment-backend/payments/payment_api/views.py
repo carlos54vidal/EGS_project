@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from rest_framework import viewsets
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 #from django.views import View
@@ -10,7 +11,7 @@ from .serializers import PaymentsSerializer
 
 from .models import Clients
 from .serializers import ClientsSerializer
-#from .forms import ClientsForm
+from .forms import ClientsForm
 
 # Create your views here.
 class PaymentsViewSet(viewsets.ModelViewSet):
@@ -49,6 +50,20 @@ def payment(request,pay_name):
     context = {'form': form}
     return render(request, 'payment.html', context)
     '''
+
+class ClientsCreateAPIView(APIView):
+    def get(self, request):
+        form = ClientsForm()
+        return render(request, 'clients_form.html', {'form': form})
+
+    def post(self, request):
+        form = ClientsForm(request.data)
+        if form.is_valid():
+            form.save()
+            return Response({'message': 'Client created successfully'}, status=status.HTTP_201_CREATED)
+        else:
+            return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
+'''
 class ClientsViewSet(viewsets.ViewSet):
     
     def create(self, request):
@@ -66,7 +81,7 @@ class ClientsViewSet(viewsets.ViewSet):
     def list(self, request):
          # Render the clients_form.html template for GET requests
         return render(request, 'clients_form.html', {})
-        
+        '''
 
 
 def process_payment(request, client_secret):

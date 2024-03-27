@@ -11,6 +11,7 @@ class ClientsAdmin(admin.ModelAdmin):
 
     fields = (
         'name',
+        'email',
         'membership_plan',
         'unique_key',
         'state'

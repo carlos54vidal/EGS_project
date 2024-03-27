@@ -32,29 +32,28 @@ class Payments(models.Model):
 class Clients(models.Model):
 
     name = models.CharField(max_length=300)
-
     PLAN_CHOICES = (
         ('a', 'Standard'),
         ('b', 'Premium'),
         ('c', 'Premium Plus')
     )
-
+    email = models.EmailField(max_length=254, unique=True)
     membership_plan = models.CharField(max_length=1, choices=PLAN_CHOICES)
-
     unique_key = models.UUIDField(
         primary_key = False, 
         default = uuid.uuid4,
         editable = True,
         unique=True
         )
-
     STATE_CHOICES = (
         ('a', 'Active'),
         ('i', 'Inactive'),
         ('s', 'Suspended')
     )
-
     state = models.CharField(max_length=1, choices=STATE_CHOICES, default='Inactive')
+    
+    def __str__(self) -> str:
+        return self.name
 
     class Meta:
 

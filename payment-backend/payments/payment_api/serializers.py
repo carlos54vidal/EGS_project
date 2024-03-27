@@ -10,4 +10,4 @@ class PaymentsSerializer(serializers.ModelSerializer):
 class ClientsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Clients
-        fields = '__all__'
+        fields = ('name', 'membership_plan', 'unique_key', 'state')
