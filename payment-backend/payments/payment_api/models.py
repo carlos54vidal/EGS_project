@@ -30,17 +30,16 @@ class Payments(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 class Clients(models.Model):
-
     name = models.CharField(max_length=300)
+    email = models.EmailField(max_length=254, unique=True)
     PLAN_CHOICES = (
         ('a', 'Standard'),
         ('b', 'Premium'),
         ('c', 'Premium Plus')
     )
-    email = models.EmailField(max_length=254, unique=True)
     membership_plan = models.CharField(max_length=1, choices=PLAN_CHOICES)
     unique_key = models.UUIDField(
-        primary_key = False, 
+        primary_key = False,
         default = uuid.uuid4,
         editable = True,
         unique=True
@@ -48,14 +47,14 @@ class Clients(models.Model):
     STATE_CHOICES = (
         ('a', 'Active'),
         ('i', 'Inactive'),
-        ('s', 'Suspended')
+        ('s', 'Suspended'),
+        ('w', 'Awaiting Approval')
     )
-    state = models.CharField(max_length=1, choices=STATE_CHOICES, default='Inactive')
+    state = models.CharField(max_length=1, choices=STATE_CHOICES, default='w')
     
     def __str__(self) -> str:
         return self.name
 
     class Meta:
-
         verbose_name_plural = "API Clients"
 

@@ -57,12 +57,15 @@ class ClientsCreateAPIView(APIView):
         return render(request, 'clients_form.html', {'form': form})
 
     def post(self, request):
-        form = ClientsForm(request.data)
+        form = ClientsForm(request.data)        
         if form.is_valid():
             form.save()
-            return Response({'message': 'Client created successfully'}, status=status.HTTP_201_CREATED)
+            return render(request, 'success.html')
+            #return Response({'message': 'Client created successfully'}, status=status.HTTP_201_CREATED)
         else:
-            return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
+            form = ClientsForm()
+        return render(request, 'clients_form_retry.html', {'form': form})
+            #return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
 '''
 class ClientsViewSet(viewsets.ViewSet):
     

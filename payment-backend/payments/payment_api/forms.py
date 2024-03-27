@@ -1,6 +1,7 @@
 # forms.py
 from django import forms
 from .models import Payments, Clients
+from django.core.exceptions import ValidationError
 
 class PaymentForm(forms.ModelForm):
     class Meta:
@@ -12,12 +13,21 @@ class PaymentForm(forms.ModelForm):
         }
 
 class ClientsForm(forms.ModelForm):
+    #email = forms.EmailField(required=True, error_messages={'invalid': 'Your email address is incorrect'})
+    #state = forms.CharField(widget=forms.HiddenInput(), initial='w')
+    #name = forms.CharField(required=True, max_length=300)
+    #membership_plan = forms.CharField()
     class Meta:
         model = Clients
-        email = forms.EmailField(label='Email Address')
-        fields = ['name', 'membership_plan', 'state']  # Specify fields to include in the form
+        fields = ['name', 'membership_plan', 'email']  # Specify fields to include in the form
 
-
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if Clients.objects.filter(email=email).exists():
+            # Email is valid, perform your desired actions
+            raise ValidationError("Email already exists")            
+        return email
+        
 def form_validation_error(form):
     msg = ""
     for field in form:
