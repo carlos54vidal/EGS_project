@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 from rest_framework import viewsets
-from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 #from django.views import View
@@ -51,33 +50,25 @@ def payment(request,pk):
     return render(request, 'payment.html', context)
     '''
 
-class ClientsCreateAPIView(APIView):
+class ClientsViewSet(viewsets.ViewSet):
     serializer_class = ClientsSerializer
     
-    #@api_view(['GET'])
-    def get(self, request):
+    def create(self, request):
+        form = ClientsForm(request.data)
+        if form.is_valid():
+            client = form.save()
+            unique_key = client.unique_key 
+            return render(request, 'success.html', {'unique_key': unique_key})
+        else:
+            return render(request, 'clients_form_retry.html', {'form': form})
+        
+    def retrieve(self, request):
         form = ClientsForm()
         return render(request, 'clients_form.html', {'form': form})
     
-    #@api_view(['POST'])
-    def post(self, request):
-        form = ClientsForm(request.data)
-        if form.is_valid():
-            #client = form.save()
-            #email = client.email  # Access the email field value from the saved client object            
-            #unique_key = Clients.objects.get(unique_key=email)            
-            client = form.save(commit=False)  # Save the form data without committing to the database yet
-            # Perform any additional processing if needed before saving
-
-            # Save the object to generate the unique_key
-            client.save()
-            unique_key = client.unique_key  # Access the unique_key field value from the saved client object    
-            return render(request, 'success.html', {'unique_key': unique_key})  # Pass the unique_key value to the success template
-            #return Response({'message': 'Client created successfully'}, status=status.HTTP_201_CREATED)
-        else:
-            #form = ClientsForm()
-            return render(request, 'clients_form_retry.html', {'form': form})
-            #return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
+    def list(self, request):
+        form = ClientsForm()
+        return render(request, 'clients_form.html', {'form': form}) 
 '''
 class ClientsViewSet(viewsets.ViewSet):
     

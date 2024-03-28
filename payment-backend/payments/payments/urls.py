@@ -24,9 +24,9 @@ from payment_api.routers import router
 
 from payment_api import views
 
-from payment_api.views import ClientsCreateAPIView
+from payment_api.views import ClientsViewSet
 
-
+from rest_framework.routers import DefaultRouter
 
 
 urlpatterns = [
@@ -42,5 +42,5 @@ urlpatterns = [
     # path('process_payment/<str:client_secret>/', views.process_payment, name='process_payment'),
 
     # URL pattern for the form
-    path('registration/', ClientsCreateAPIView.as_view(), name='registration'),
+    path('registration/', ClientsViewSet.as_view({'post': 'create', 'get': 'list'}), name='registration'),
 ]
