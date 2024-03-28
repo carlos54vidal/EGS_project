@@ -19,13 +19,13 @@ class ClientsForm(forms.ModelForm):
     #membership_plan = forms.CharField()
     class Meta:
         model = Clients
-        fields = ['name', 'membership_plan', 'email']  # Specify fields to include in the form
+        fields = ['name', 'email', 'membership_plan']  # Specify fields to include in the form
 
     def clean_email(self):
         email = self.cleaned_data['email']
         if Clients.objects.filter(email=email).exists():
             # Email is valid, perform your desired actions
-            raise ValidationError("Email already exists")            
+            raise ValidationError("e-mail already exists")            
         return email
         
 def form_validation_error(form):
