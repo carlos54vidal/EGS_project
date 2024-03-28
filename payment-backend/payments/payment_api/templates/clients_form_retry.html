@@ -16,10 +16,13 @@
         form {
             text-align: leftt;
             margin: 0 auto; 
-            width:400px;
+            width:600px;
         }
         input {
-            width: 75%;
+            width: 85%;
+        }
+        textarea {
+            width: 95%;
         }
         .center {
             display: flex;
@@ -29,7 +32,7 @@
         }
         div.fixed {
             position: fixed;
-            width: 400px;
+            width: 600px;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -67,6 +70,14 @@
                             <input type="email" id="id_email" name="email" value="{{ form.data.email }}">
                         </div>
                     </div>                            
+                </div>
+                <div class="row">
+                    <div class="col-lg">         
+                        <div class="form-group">
+                            <label for="paypal_client_id">PayPal Client ID:</label>
+                            <textarea rows="2" cols="40" id="paypal_client_id" name="paypal_client_id"></textarea>
+                        </div>
+                    </div>                           
                 </div>
                 <div class="row">
                     <div class="col-lg">

@@ -17,12 +17,14 @@ class PaymentsViewSet(viewsets.ModelViewSet):
     queryset = Payments.objects.all()
     serializer_class = PaymentsSerializer
 
-def payment(request,pk):
+def payment(request,cid, pid):
     print(request.headers)
 
     # Paypal
-    payments = Payments.objects.get(client_unique_key=pk)
-    context = {'payments':payments}
+    clients = Clients.objects.get (unique_key=cid)
+    payments = Payments.objects.get(payment_unique_key=pid)
+    context = {'payments':payments, 'clients':clients}
+    
     return render (request, 'payment.html', context)
     # End Paypal
     
@@ -51,6 +53,7 @@ def payment(request,pk):
     '''
 
 class ClientsViewSet(viewsets.ViewSet):
+    queryset = Clients.objects.all()
     serializer_class = ClientsSerializer
     
     def create(self, request):

@@ -19,7 +19,7 @@ class ClientsForm(forms.ModelForm):
     #membership_plan = forms.CharField()
     class Meta:
         model = Clients
-        fields = ['name', 'email', 'membership_plan']  # Specify fields to include in the form
+        fields = ['name', 'email', 'paypal_client_id', 'membership_plan']  # Specify fields to include in the form
 
     def clean_email(self):
         email = self.cleaned_data['email']

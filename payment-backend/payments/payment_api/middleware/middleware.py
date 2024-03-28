@@ -9,8 +9,7 @@ class PaymentsMiddleware:
         
         # Perform the database query
         
-
-        header_value = request.COOKIES.get('client_unique_key')
+        header_value = request.headers.get('client_unique_key')
         value_exists = Clients.objects.filter(unique_key=header_value).exists()
 
         if value_exists:            

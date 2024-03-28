@@ -17,12 +17,12 @@ class Payments(models.Model):
     description = models.CharField(max_length=100)
     paid = models.BooleanField(default=False)
     name = models.CharField(max_length=120)
-    type = models.CharField(max_length=5, choices=Type.choices, blank=True)    
+    payment_unique_key = models.CharField(max_length=36, blank=False)    
     client_unique_key = models.UUIDField(
         primary_key = False, 
         default = uuid.uuid4,
         editable = True,
-        unique=True
+        unique=False
         )
     is_active = models.BooleanField(default=True)
     status = models.IntegerField(choices=Status.choices, default=Status.ACTIVE)
@@ -32,6 +32,7 @@ class Payments(models.Model):
 class Clients(models.Model):
     name = models.CharField(max_length=300)
     email = models.EmailField(max_length=254, unique=True)
+    paypal_client_id = models.CharField(max_length=80)
     PLAN_CHOICES = (
         ('a', 'Standard'),
         ('b', 'Premium'),
