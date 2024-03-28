@@ -52,6 +52,8 @@ def payment(request,pk):
     '''
 
 class ClientsCreateAPIView(APIView):
+    serializer_class = ClientsSerializer
+    
     #@api_view(['GET'])
     def get(self, request):
         form = ClientsForm()

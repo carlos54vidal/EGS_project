@@ -168,23 +168,74 @@ paths:
       - {}
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Clients'
+          description: ''
     post:
       operationId: registration_create
       tags:
       - registration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Clients'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Clients'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Clients'
+        required: true
       security:
       - cookieAuth: []
       - basicAuth: []
       - {}
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Clients'
+          description: ''
 components:
   schemas:
     BlankEnum:
       enum:
       - ''
+    Clients:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 300
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        membership_plan:
+          $ref: '#/components/schemas/MembershipPlanEnum'
+        unique_key:
+          type: string
+          format: uuid
+        state:
+          $ref: '#/components/schemas/StateEnum'
+      required:
+      - email
+      - membership_plan
+      - name
+    MembershipPlanEnum:
+      enum:
+      - a
+      - b
+      - c
+      type: string
+      description: |-
+        * `a` - Standard
+        * `b` - Premium
+        * `c` - Premium Plus
     PatchedPayments:
       type: object
       properties:
@@ -251,6 +302,18 @@ components:
       - id
       - name
       - updated_at
+    StateEnum:
+      enum:
+      - a
+      - i
+      - s
+      - w
+      type: string
+      description: |-
+        * `a` - Active
+        * `i` - Inactive
+        * `s` - Suspended
+        * `w` - Awaiting Approval
     TypeEnum:
       enum:
       - CC
