@@ -1,12 +1,19 @@
 from django.shortcuts import render, redirect
+# from django.http import JsonResponse
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
+from drf_spectacular.utils import extend_schema
+from rest_framework.views import APIView
+from rest_framework.exceptions import MethodNotAllowed
+import json
 #from django.views import View
 
 from .models import Payments
 from .serializers import PaymentsSerializer
 #from .forms import PaymentForm
+
+from .serializers import PaymentCompleteSerializer
 
 from .models import Clients
 from .serializers import ClientsSerializer
@@ -27,6 +34,35 @@ def payment(request,cid, pid):
     
     return render (request, 'payment.html', context)
     # End Paypal
+
+class PaymentCompleteAPIView(APIView):
+    serializer_class = PaymentCompleteSerializer
+    @extend_schema(
+        description="Endpoint to complete payment by updating payment status",
+        responses={200: None, 400: {"error": "Invalid JSON data"}}
+    )
+    
+    def patch(self, request):
+        # Assuming the request body contains JSON data
+        try:
+            body = self.request.data  # Access request data instead of request.body            
+
+            # Query the database for the corresponding payment record
+            payment = Payments.objects.get(id=body['paymentId'])
+
+            # Update the 'paid' field of the payment record
+            payment.paid = True
+            payment.save()
+            return Response({'message': 'Payment updated successfully'})
+        except KeyError:
+            return Response({'error': 'Invalid request data. Ensure paymentId is provided.'}, status=status.HTTP_400_BAD_REQUEST)
+        except Payments.DoesNotExist:
+            return Response({'error': 'Payment not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def handle_exception(self, exc):
+        if isinstance(exc, MethodNotAllowed):
+            return Response({'error': 'Method not allowed'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        return super().handle_exception(exc)
     
     '''
     form = PaymentForm(request.POST or None)

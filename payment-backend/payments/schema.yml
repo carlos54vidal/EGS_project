@@ -4,11 +4,11 @@ info:
   version: 1.0.0
   description: API for Payments
 paths:
-  /payments/:
+  /payment/:
     get:
-      operationId: payments_list
+      operationId: payment_list
       tags:
-      - payments
+      - payment
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -23,9 +23,9 @@ paths:
                   $ref: '#/components/schemas/Payments'
           description: ''
     post:
-      operationId: payments_create
+      operationId: payment_create
       tags:
-      - payments
+      - payment
       requestBody:
         content:
           application/json:
@@ -49,18 +49,101 @@ paths:
               schema:
                 $ref: '#/components/schemas/Payments'
           description: ''
-  /payments/{id}/:
+  /payment/{cid}/{pid}/:
     get:
-      operationId: payments_retrieve
+      operationId: payment_list_2
       parameters:
+      - in: path
+        name: cid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: pid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - payment
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Payments'
+          description: ''
+    post:
+      operationId: payment_create_2
+      parameters:
+      - in: path
+        name: cid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: pid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - payment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payments'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Payments'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Payments'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payments'
+          description: ''
+  /payment/{cid}/{pid}/{id}/:
+    get:
+      operationId: payment_retrieve
+      parameters:
+      - in: path
+        name: cid
+        schema:
+          type: string
+          format: uuid
+        required: true
       - in: path
         name: id
         schema:
           type: integer
         description: A unique integer value identifying this payments.
         required: true
+      - in: path
+        name: pid
+        schema:
+          type: string
+          format: uuid
+        required: true
       tags:
-      - payments
+      - payment
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -73,16 +156,28 @@ paths:
                 $ref: '#/components/schemas/Payments'
           description: ''
     put:
-      operationId: payments_update
+      operationId: payment_update
       parameters:
+      - in: path
+        name: cid
+        schema:
+          type: string
+          format: uuid
+        required: true
       - in: path
         name: id
         schema:
           type: integer
         description: A unique integer value identifying this payments.
         required: true
+      - in: path
+        name: pid
+        schema:
+          type: string
+          format: uuid
+        required: true
       tags:
-      - payments
+      - payment
       requestBody:
         content:
           application/json:
@@ -107,16 +202,28 @@ paths:
                 $ref: '#/components/schemas/Payments'
           description: ''
     patch:
-      operationId: payments_partial_update
+      operationId: payment_partial_update
       parameters:
+      - in: path
+        name: cid
+        schema:
+          type: string
+          format: uuid
+        required: true
       - in: path
         name: id
         schema:
           type: integer
         description: A unique integer value identifying this payments.
         required: true
+      - in: path
+        name: pid
+        schema:
+          type: string
+          format: uuid
+        required: true
       tags:
-      - payments
+      - payment
       requestBody:
         content:
           application/json:
@@ -140,7 +247,38 @@ paths:
                 $ref: '#/components/schemas/Payments'
           description: ''
     delete:
-      operationId: payments_destroy
+      operationId: payment_destroy
+      parameters:
+      - in: path
+        name: cid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this payments.
+        required: true
+      - in: path
+        name: pid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - payment
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /payment/{id}/:
+    get:
+      operationId: payment_retrieve_2
       parameters:
       - in: path
         name: id
@@ -149,7 +287,96 @@ paths:
         description: A unique integer value identifying this payments.
         required: true
       tags:
-      - payments
+      - payment
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payments'
+          description: ''
+    put:
+      operationId: payment_update_2
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this payments.
+        required: true
+      tags:
+      - payment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payments'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Payments'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Payments'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payments'
+          description: ''
+    patch:
+      operationId: payment_partial_update_2
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this payments.
+        required: true
+      tags:
+      - payment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPayments'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPayments'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPayments'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payments'
+          description: ''
+    delete:
+      operationId: payment_destroy_2
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this payments.
+        required: true
+      tags:
+      - payment
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -157,9 +384,39 @@ paths:
       responses:
         '204':
           description: No response body
+  /payment_complete/:
+    patch:
+      operationId: payment_complete_partial_update
+      description: Endpoint to complete payment by updating payment status
+      tags:
+      - payment_complete
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPaymentComplete'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPaymentComplete'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPaymentComplete'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+        '400':
+          content:
+            application/json:
+              schema:
+                error: Invalid JSON data
+          description: ''
   /registration/:
     get:
-      operationId: registration_retrieve
+      operationId: registration_list
       tags:
       - registration
       security:
@@ -171,7 +428,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Clients'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Clients'
           description: ''
     post:
       operationId: registration_create
@@ -194,6 +453,29 @@ paths:
       - basicAuth: []
       - {}
       responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Clients'
+          description: ''
+  /registration/{id}/:
+    get:
+      operationId: registration_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this clients.
+        required: true
+      tags:
+      - registration
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
         '200':
           content:
             application/json:
@@ -202,9 +484,6 @@ paths:
           description: ''
 components:
   schemas:
-    BlankEnum:
-      enum:
-      - ''
     Clients:
       type: object
       properties:
@@ -215,6 +494,9 @@ components:
           type: string
           format: email
           maxLength: 254
+        paypal_client_id:
+          type: string
+          maxLength: 80
         membership_plan:
           $ref: '#/components/schemas/MembershipPlanEnum'
         unique_key:
@@ -226,6 +508,7 @@ components:
       - email
       - membership_plan
       - name
+      - paypal_client_id
     MembershipPlanEnum:
       enum:
       - a
@@ -236,6 +519,14 @@ components:
         * `a` - Standard
         * `b` - Premium
         * `c` - Premium Plus
+    PatchedPaymentComplete:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        paid:
+          type: boolean
     PatchedPayments:
       type: object
       properties:
@@ -248,10 +539,9 @@ components:
         name:
           type: string
           maxLength: 120
-        type:
-          oneOf:
-          - $ref: '#/components/schemas/TypeEnum'
-          - $ref: '#/components/schemas/BlankEnum'
+        payment_unique_key:
+          type: string
+          maxLength: 36
         amount:
           type: string
           format: decimal
@@ -278,10 +568,9 @@ components:
         name:
           type: string
           maxLength: 120
-        type:
-          oneOf:
-          - $ref: '#/components/schemas/TypeEnum'
-          - $ref: '#/components/schemas/BlankEnum'
+        payment_unique_key:
+          type: string
+          maxLength: 36
         amount:
           type: string
           format: decimal
@@ -301,6 +590,7 @@ components:
       - created_at
       - id
       - name
+      - payment_unique_key
       - updated_at
     StateEnum:
       enum:
@@ -314,16 +604,6 @@ components:
         * `i` - Inactive
         * `s` - Suspended
         * `w` - Awaiting Approval
-    TypeEnum:
-      enum:
-      - CC
-      - P
-      - O
-      type: string
-      description: |-
-        * `CC` - Credit Card
-        * `P` - Paypal
-        * `O` - Others
   securitySchemes:
     basicAuth:
       type: http
