@@ -1,6 +1,6 @@
-export interface ReadBookings {
-  bookingId: string;
+export interface ReadBooking {
+  bookingId?: string;
   datetime: Date;
   duration: number;
-  description: string;
+  description?: string;
 }

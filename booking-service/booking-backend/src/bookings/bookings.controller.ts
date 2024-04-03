@@ -8,8 +8,9 @@ import {
   Delete,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
-import { ApiSecurity, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiSecurity, ApiOperation, ApiTags, ApiQuery } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
@@ -41,19 +42,45 @@ export class BookingsController {
     return this.bookingsService.findAll(apikey);
   }
 
-  @Get('free')
+  @Get('free-slots')
   @UseGuards(AuthGuard('headerapikey'))
   @ApiOperation({ summary: 'Get all available bookings' })
-  findFree(@Req() request: Request) {
+  @ApiQuery({
+    name: 'startDateTime',
+    example: '2024-01-01T10:00:00Z',
+  })
+  @ApiQuery({
+    name: 'endDateTime',
+    example: '2024-01-01T11:00:00Z',
+  })
+  findFree(
+    @Req() request: Request,
+    @Query('startDateTime') start: Date,
+    @Query('endDateTime') end: Date,
+  ) {
     const apikey = request.headers['api-key'];
-    return this.bookingsService.findAll(apikey);
+    return this.bookingsService.findAllFree(apikey, start, end);
   }
 
-  // @Get('busy')
-  // @ApiOperation({ summary: 'Get all busy bookings' })
-  // findBusy() {
-  //   return this.bookingsService.findAll();
-  // }
+  @Get('busy-slots')
+  @UseGuards(AuthGuard('headerapikey'))
+  @ApiOperation({ summary: 'Get all busy bookings' })
+  @ApiQuery({
+    name: 'startDateTime',
+    example: '2024-01-01T10:00:00Z',
+  })
+  @ApiQuery({
+    name: 'endDateTime',
+    example: '2024-01-01T11:00:00Z',
+  })
+  findBusy(
+    @Req() request: Request,
+    @Query('startDateTime') start: Date,
+    @Query('endDateTime') end: Date,
+  ) {
+    const apikey = request.headers['api-key'];
+    return this.bookingsService.findAllBusy(apikey, start, end);
+  }
 
   @Get(':uuid')
   @UseGuards(AuthGuard('headerapikey'))

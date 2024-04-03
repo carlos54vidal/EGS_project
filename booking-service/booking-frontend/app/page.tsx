@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import SignUp from "@/components/signUp";
-import Image from "next/image";
 import SuccessAlert from "@/components/successAlert";
 
 export default function Home() {

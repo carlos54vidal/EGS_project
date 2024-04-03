@@ -60,7 +60,7 @@ export default function SignUp({
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-            Sign up for free
+            Client Register
           </h2>
         </div>
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
@@ -71,13 +71,14 @@ export default function SignUp({
                   htmlFor="name"
                   className="block text-sm font-medium leading-6 text-gray-900"
                 >
-                  Company name
+                  Client name
                 </label>
                 <div className="mt-2">
                   <input
                     id="name"
                     name="name"
                     type="text"
+                    placeholder="Name"
                     required
                     value={companyName}
                     onChange={handleCompanyNameChange}
@@ -91,11 +92,11 @@ export default function SignUp({
                   type="submit"
                   className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
-                  Sign up
+                  Register
                 </button>
               </div>
             </form>
-            <p className="mt-10 text-center text-sm text-gray-500">
+            {/* <p className="mt-10 text-center text-sm text-gray-500">
               Not a member?{" "}
               <a
                 href="#"
@@ -103,7 +104,7 @@ export default function SignUp({
               >
                 Start now for FREE !
               </a>
-            </p>
+            </p> */}
           </div>
         </div>
       </div>

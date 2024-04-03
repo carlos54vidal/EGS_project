@@ -11,13 +11,13 @@ export class AppService {
   findAll() {
     return [
       {
-        bookingId: '7543785-323fdf2',
+        bookingId: 'fbdbd444-1509-46e3-b1d9-a6f0aa2a8bc2',
         datetime: '2024-03-20T09:36:39.948Z',
         duration: 10000,
         description: 'booking description',
       },
       {
-        bookingId: '7543785-323fdf2',
+        bookingId: 'fbdbd444-1509-46e3-b1d9-a6f0aa2a8bc2',
         datetime: '2024-03-20T09:36:39.948Z',
         duration: 10000,
         description: 'booking description',
