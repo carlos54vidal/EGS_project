@@ -133,8 +133,9 @@ paths:
       - in: path
         name: id
         schema:
-          type: integer
-        description: A unique integer value identifying this payments.
+          type: string
+          format: uuid
+        description: A UUID string identifying this payments.
         required: true
       - in: path
         name: pid
@@ -167,8 +168,9 @@ paths:
       - in: path
         name: id
         schema:
-          type: integer
-        description: A unique integer value identifying this payments.
+          type: string
+          format: uuid
+        description: A UUID string identifying this payments.
         required: true
       - in: path
         name: pid
@@ -213,8 +215,9 @@ paths:
       - in: path
         name: id
         schema:
-          type: integer
-        description: A unique integer value identifying this payments.
+          type: string
+          format: uuid
+        description: A UUID string identifying this payments.
         required: true
       - in: path
         name: pid
@@ -258,8 +261,9 @@ paths:
       - in: path
         name: id
         schema:
-          type: integer
-        description: A unique integer value identifying this payments.
+          type: string
+          format: uuid
+        description: A UUID string identifying this payments.
         required: true
       - in: path
         name: pid
@@ -283,8 +287,9 @@ paths:
       - in: path
         name: id
         schema:
-          type: integer
-        description: A unique integer value identifying this payments.
+          type: string
+          format: uuid
+        description: A UUID string identifying this payments.
         required: true
       tags:
       - payment
@@ -305,8 +310,9 @@ paths:
       - in: path
         name: id
         schema:
-          type: integer
-        description: A unique integer value identifying this payments.
+          type: string
+          format: uuid
+        description: A UUID string identifying this payments.
         required: true
       tags:
       - payment
@@ -339,8 +345,9 @@ paths:
       - in: path
         name: id
         schema:
-          type: integer
-        description: A unique integer value identifying this payments.
+          type: string
+          format: uuid
+        description: A UUID string identifying this payments.
         required: true
       tags:
       - payment
@@ -372,8 +379,9 @@ paths:
       - in: path
         name: id
         schema:
-          type: integer
-        description: A unique integer value identifying this payments.
+          type: string
+          format: uuid
+        description: A UUID string identifying this payments.
         required: true
       tags:
       - payment
@@ -523,7 +531,8 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
+          format: uuid
           readOnly: true
         paid:
           type: boolean
@@ -531,7 +540,8 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
+          format: uuid
           readOnly: true
         client_unique_key:
           type: string
@@ -539,9 +549,6 @@ components:
         name:
           type: string
           maxLength: 120
-        payment_unique_key:
-          type: string
-          maxLength: 36
         amount:
           type: string
           format: decimal
@@ -560,7 +567,8 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
+          format: uuid
           readOnly: true
         client_unique_key:
           type: string
@@ -568,9 +576,6 @@ components:
         name:
           type: string
           maxLength: 120
-        payment_unique_key:
-          type: string
-          maxLength: 36
         amount:
           type: string
           format: decimal
@@ -590,7 +595,6 @@ components:
       - created_at
       - id
       - name
-      - payment_unique_key
       - updated_at
     StateEnum:
       enum:

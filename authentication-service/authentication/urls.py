@@ -23,7 +23,7 @@ from authentication.authentication.routers import router
 
 urlpatterns = [
     path('admin/', admin.site.urls),    
-    path('', include(router.urls)),
+    path('', include(router.urls)), 
     path('accounts/', include('allauth.urls')),
     path('accounts/profile/', views.profile, name='profile'),    
     path('schema/', SpectacularAPIView.as_view(), name='schema'),

@@ -13,16 +13,23 @@ class Payments(models.Model):
         PAYPAL = 'P', 'Paypal'
         OTHER = 'O', 'Others'
 
+    id = models.UUIDField(
+        primary_key = True, 
+        default = uuid.uuid4,
+        editable = True,
+        unique=True
+        )
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.CharField(max_length=100)
     paid = models.BooleanField(default=False)
     name = models.CharField(max_length=120)
-    payment_unique_key = models.CharField(max_length=36, blank=False)    
+    # payment_unique_key = models.CharField(max_length=36, blank=False)    
     client_unique_key = models.UUIDField(
         primary_key = False, 
         default = uuid.uuid4,
         editable = True,
-        unique=False
+        unique=False,
+        blank=False,
         )
     is_active = models.BooleanField(default=True)
     status = models.IntegerField(choices=Status.choices, default=Status.ACTIVE)
