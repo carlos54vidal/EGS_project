@@ -10,8 +10,8 @@ export class ApiKeyStrategy extends PassportStrategy(HeaderAPIKeyStrategy) {
       // validate the client api key
       try {
         const isValid = await authService.validateApiKey(apikey);
-        console.log('\nApiKeyStrategy:');
-        console.log(isValid);
+        // console.log('\nApiKeyStrategy:');
+        // console.log(isValid);
         if (!isValid) {
           return done(new UnauthorizedException('Invalid API key'), false);
         }

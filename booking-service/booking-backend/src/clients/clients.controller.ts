@@ -25,7 +25,6 @@ export class ClientsController {
 
   @Get()
   findAll() {
-    console.log('Clients Controller - findAll');
     return this.clientsService.findAll();
   }
 

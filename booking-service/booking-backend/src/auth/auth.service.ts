@@ -8,14 +8,14 @@ export class AuthService {
   // Check if the api-key exists for a specific client
   async validateApiKey(apiKey: string): Promise<boolean> {
     //validateApiKey(apiKey: string): boolean {
-    console.log('\nAuth Service: ');
-    console.log('apiKey: ' + apiKey);
-    console.log('Auth - Validating api-key...');
+    // console.log('\nAuth Service: ');
+    // console.log('apiKey: ' + apiKey);
+    // console.log('Auth - Validating api-key...');
 
     const clientExists = await this.clientsService.findOne(apiKey);
-    console.log(clientExists);
+    //console.log(clientExists);
     if (clientExists) {
-      console.log('Valid !! ');
+      //console.log('Valid !! ');
       return true;
     }
 
