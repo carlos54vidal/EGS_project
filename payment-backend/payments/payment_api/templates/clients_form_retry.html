@@ -1,0 +1,105 @@
+<!-- clients_form_retry.html -->
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registration</title>
+    <meta id="meta" name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    
+    <style type="text/css">
+		body{
+			background-color: #f0f0f0;			
+		}
+		h1{text-align: center;}
+		h2{text-align: center;}
+        form {
+            text-align: leftt;
+            margin: 0 auto; 
+            width:600px;
+        }
+        input {
+            width: 85%;
+        }
+        textarea {
+            width: 95%;
+        }
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50px;
+        }
+        div.fixed {
+            position: fixed;
+            width: 600px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+	</style>		
+
+</head>
+<body>
+    <form method="post" action="{% url 'registration' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="fixed">
+            <div class="card card-body bg-white border-light shadow-sm mb-4">
+                <h2 class="h5 mb-4">Client Registration</h2>
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <strong>{{ field.label }}: </strong>{{ error }}<br>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div class="row">
+                    <div class="col-lg">                    
+                        <div class="form-group">
+                            <label for="id_name">Name:</label>
+                            <input type="text" id="id_name" name="name" value="{{ form.data.name }}">
+                        </div>
+                    </div>                           
+                </div>
+                <div class="row">
+                    <div class="col-lg">                        
+                        <div class="form-group">
+                            <label for="id_email">E-mail:</label>
+                            <input type="email" id="id_email" name="email" value="{{ form.data.email }}">
+                        </div>
+                    </div>                            
+                </div>
+                <div class="row">
+                    <div class="col-lg">         
+                        <div class="form-group">
+                            <label for="paypal_client_id">PayPal Client ID:</label>
+                            <textarea rows="2" cols="40" id="paypal_client_id" name="paypal_client_id"></textarea>
+                        </div>
+                    </div>                           
+                </div>
+                <div class="row">
+                    <div class="col-lg">
+                        <div class="form-group">
+                            <label for="id_membership_plan">Membership Plan:</label>
+                            <select id="id_membership_plan" name="membership_plan">
+                                <option value="a">Standard</option>
+                                <option value="b">Premium</option>
+                                <option value="c">Premium Plus</option>
+                            </select>
+                        </div>
+                    </div>                            
+                </div>
+                <div class="row">
+                    <div class="col-lg">
+                        <div class="center">                            
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>                
+                </div>
+            </div>
+        </div>
+    </form>
+</body>
+</html>

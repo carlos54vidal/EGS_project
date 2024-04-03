@@ -24,6 +24,11 @@ from payment_api.routers import router
 
 from payment_api import views
 
+from payment_api.views import ClientsViewSet, PaymentCompleteAPIView
+
+from rest_framework.routers import DefaultRouter
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
@@ -33,6 +38,11 @@ urlpatterns = [
     # Redoc UI:
     path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 
-    path('payment/', views.payment, name='payment'),
+    path('payment/<uuid:cid>/<uuid:pid>/', views.payment, name='payment'),
     # path('process_payment/<str:client_secret>/', views.process_payment, name='process_payment'),
+
+    # URL pattern for the form
+    path('registration/', ClientsViewSet.as_view({'post': 'create', 'get': 'list'}), name='registration'),
+
+    path('payment_complete/', PaymentCompleteAPIView.as_view(), name='payment_complete'),
 ]

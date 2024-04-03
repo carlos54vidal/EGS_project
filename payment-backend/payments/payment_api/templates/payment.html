@@ -1,11 +1,143 @@
-<!-- payment.html -->
-{% extends 'base.html' %}
-{% load static %}
-{% block content %}
-  <h2>Make a Payment</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Pay</button>
-  </form>
-{% endblock %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Store</title>
+	<meta id="meta" name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+
+	<style type="text/css">
+		body{
+			background-color: #f0f0f0;
+			
+		}
+		h1{text-align: center;}
+		h2{text-align: center;}
+
+	</style>		
+
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-lg">
+				
+			</div>
+			<div class="col-lg">
+				<br>
+				<div class="card card-body">
+					<h1>{{payments.name}}</h1>
+					<hr>
+					<h2>Total: {{payments.amount}}€</h2>
+					<hr>
+					<div id="paypal-button-container"></div>
+				</div>
+			</div>
+			<div class="col-lg">
+				
+			</div>
+		</div>
+	</div>
+	<script src="https://www.paypalobjects.com/api/checkout.js"></script>
+
+	<div id="paypal-button-container"></div>
+	
+	<script>
+
+		function getCookie(name) {
+			let cookieValue = null;
+			if (document.cookie && document.cookie !== '') {
+				const cookies = document.cookie.split(';');
+				for (let i = 0; i < cookies.length; i++) {
+					const cookie = cookies[i].trim();
+					// Does this cookie string begin with the name we want?
+					if (cookie.substring(0, name.length + 1) === (name + '=')) {
+						cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+						break;
+					}
+				}
+			}
+			return cookieValue;
+		}
+		const csrftoken = getCookie('csrftoken');
+
+		var total = '{{payments.amount}}'
+		var paymentId = '{{payments.id}}'
+
+		function completePayment(){
+			fetch('payment_complete/', {
+				method:'PATCH',
+				headers:{
+					'Content-type':'application/json',
+					'X-CSRFToken':csrftoken,
+				},
+				body:JSON.stringify({
+					id: paymentId,  // Include paymentId in the request body
+					paid: true,  // Update the 'paid' field to true
+				}),
+			})
+		}
+	
+		// Render the PayPal button
+	
+		paypal.Button.render({
+	
+			// Set your environment
+	
+			env: 'sandbox', // sandbox | production
+	
+			// Specify the style of the button
+	
+			style: {
+				layout: 'vertical',  // horizontal | vertical
+				size:   'responsive',    // medium | large | responsive
+				shape:  'rect',      // pill | rect
+				color:  'blue'       // gold | blue | silver | black
+			},
+	
+			// Specify allowed and disallowed funding sources
+			//
+			// Options:
+			// - paypal.FUNDING.CARD
+			// - paypal.FUNDING.CREDIT
+			// - paypal.FUNDING.ELV
+	
+			funding: {
+				allowed: [ paypal.FUNDING.CARD, paypal.FUNDING.CREDIT ],
+				disallowed: [ ]
+			},
+	
+			// PayPal Client IDs - replace with your own
+			// Create a PayPal app: https://developer.paypal.com/developer/applications/create
+	
+			client: {
+				sandbox:    '{{clients.paypal_client_id}}',
+				production: '{{clients.paypal_client_id}}'
+			},
+	
+			payment: function(data, actions) {
+				return actions.payment.create({
+					payment: {
+						transactions: [
+							{
+								amount: { total: total, currency: 'EUR' }
+							}
+						]
+					}
+				});
+			},
+	
+			onAuthorize: function(data, actions) {
+				return actions.payment.execute().then(function() {
+					completePayment()
+					window.alert('Payment Complete!');
+				});
+			}
+	
+		}, '#paypal-button-container');
+	
+	</script>
+		
+</body>
+</html>

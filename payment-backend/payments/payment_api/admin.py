@@ -11,11 +11,14 @@ class ClientsAdmin(admin.ModelAdmin):
 
     fields = (
         'name',
+        'email',
+        'paypal_client_id',
         'membership_plan',
         'unique_key',
+        'state'
     )
 
-    list_display = ['name', 'membership_plan', 'unique_key']
+    list_display = ['name', 'membership_plan', 'unique_key', 'state']
 
     list_filter = ['membership_plan']
 

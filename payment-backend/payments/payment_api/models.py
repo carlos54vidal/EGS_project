@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 
 # Create your models here.
 
@@ -16,28 +17,45 @@ class Payments(models.Model):
     description = models.CharField(max_length=100)
     paid = models.BooleanField(default=False)
     name = models.CharField(max_length=120)
-    type = models.CharField(max_length=5, choices=Type.choices, blank=True)    
-    client_unique_key = models.CharField(max_length=300)
+    payment_unique_key = models.CharField(max_length=36, blank=False)    
+    client_unique_key = models.UUIDField(
+        primary_key = False, 
+        default = uuid.uuid4,
+        editable = True,
+        unique=False
+        )
     is_active = models.BooleanField(default=True)
     status = models.IntegerField(choices=Status.choices, default=Status.ACTIVE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 class Clients(models.Model):
-
     name = models.CharField(max_length=300)
-
-    MY_CHOICES = (
+    email = models.EmailField(max_length=254, unique=True)
+    paypal_client_id = models.CharField(max_length=80)
+    PLAN_CHOICES = (
         ('a', 'Standard'),
         ('b', 'Premium'),
         ('c', 'Premium Plus')
     )
-
-    membership_plan = models.CharField(max_length=1, choices=MY_CHOICES)
-
-    unique_key = models.CharField(max_length=300)
+    membership_plan = models.CharField(max_length=1, choices=PLAN_CHOICES)
+    unique_key = models.UUIDField(
+        primary_key = False,
+        default = uuid.uuid4,
+        editable = True,
+        unique=True
+        )
+    STATE_CHOICES = (
+        ('a', 'Active'),
+        ('i', 'Inactive'),
+        ('s', 'Suspended'),
+        ('w', 'Awaiting Approval')
+    )
+    state = models.CharField(max_length=1, choices=STATE_CHOICES, default='w')
+    
+    def __str__(self) -> str:
+        return self.name
 
     class Meta:
-
         verbose_name_plural = "API Clients"
 
