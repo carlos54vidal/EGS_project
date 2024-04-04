@@ -3,6 +3,6 @@ from .views import PaymentsViewSet
 from .views import ClientsViewSet
 
 router = DefaultRouter()
-router.register('payment', PaymentsViewSet)
-router.register('payment/<uuid:cid>/<uuid:pid>', PaymentsViewSet)
-router.register('registration', ClientsViewSet)
+router.register('v1/payment', PaymentsViewSet)
+router.register('vi/checkout/<uuid:pk>', PaymentsViewSet)
+router.register('v1/registration', ClientsViewSet)

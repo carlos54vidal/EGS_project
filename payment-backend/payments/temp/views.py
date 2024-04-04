@@ -14,12 +14,14 @@ from .serializers import PaymentsSerializer
 #from .forms import PaymentForm
 from .serializers import PaymentsListSerializer
 from .serializers import PaymentsCreateUpdateSerializer
+
 from .serializers import PaymentCompleteSerializer
 
 from .models import Clients
 from .serializers import ClientsSerializer
 from .forms import ClientsForm
 
+# Create your views here.
 class PaymentsViewSet(viewsets.ModelViewSet):
     queryset = Payments.objects.all()
 
@@ -31,25 +33,15 @@ class PaymentsViewSet(viewsets.ModelViewSet):
         else:
             return PaymentsSerializer  # Default serializer
 
-def payment(request, cid, pid):
+def payment(request, pid):
     print(request.headers)
 
     # Paypal
-    clients = Clients.objects.get (unique_key=cid)
     payments = Payments.objects.get(id=pid)
-    context = {'payments':payments, 'clients':clients}
-    
-    return render (request, 'payment.html', context)
-    # End Paypal
-
-
-def payment_pid(request, pk):
-    print(request.headers)
-
-    payments = Payments.objects.get(id=pk)
     context = {'payments':payments}
     
     return render (request, 'payment.html', context)
+    # End Paypal
 
 class PaymentCompleteAPIView(APIView):
     serializer_class = PaymentCompleteSerializer

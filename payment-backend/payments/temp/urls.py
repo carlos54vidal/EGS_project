@@ -37,12 +37,12 @@ urlpatterns = [
     path('docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     # Redoc UI:
     path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
-    path('v1/checkout/<uuid:pk>/', views.payment_pid, name='payment_pid'),
-    path('v1/payment/<uuid:cid>/<uuid:pid>/', views.payment, name='payment'),
+
+    path('payment/<uuid:pid>/', views.payment, name='payment'),
     # path('process_payment/<str:client_secret>/', views.process_payment, name='process_payment'),
 
     # URL pattern for the form
-    path('v1/registration/', ClientsViewSet.as_view({'post': 'create', 'get': 'list'}), name='registration'),
+    path('registration/', ClientsViewSet.as_view({'post': 'create', 'get': 'list'}), name='registration'),
 
-    path('v1/payment_complete/', PaymentCompleteAPIView.as_view(), name='payment_complete'),
+    path('payment_complete/', PaymentCompleteAPIView.as_view(), name='payment_complete'),
 ]
