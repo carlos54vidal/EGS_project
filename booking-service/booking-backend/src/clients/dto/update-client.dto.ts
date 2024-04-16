@@ -1,4 +1,6 @@
-import { PartialType } from '@nestjs/mapped-types';
+import { PartialType, PickType } from '@nestjs/swagger';
 import { CreateClientDto } from './create-client.dto';
 
-export class UpdateClientDto extends PartialType(CreateClientDto) {}
+export class UpdateClientDto extends PartialType(
+  PickType(CreateClientDto, ['name'] as const),
+) {}

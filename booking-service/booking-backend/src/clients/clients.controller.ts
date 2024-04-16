@@ -10,16 +10,19 @@ import {
 import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Clients')
 @Controller('clients')
 export class ClientsController {
   constructor(private readonly clientsService: ClientsService) {}
 
+  @ApiOperation({
+    summary: 'Add a new client',
+    description: 'Create a new client',
+  })
   @Post()
   create(@Body() data: CreateClientDto) {
-    console.log('Clients Controller - Create');
     return this.clientsService.create(data);
   }
 
@@ -34,12 +37,12 @@ export class ClientsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto) {
-    return this.clientsService.update(+id, updateClientDto);
+  update(@Param('id') id: string, @Body() data: UpdateClientDto) {
+    return this.clientsService.update(id, data);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.clientsService.remove(+id);
+    return this.clientsService.remove(id);
   }
 }

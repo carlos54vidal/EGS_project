@@ -5,5 +5,5 @@ export class CreateClientDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  clientName: string;
+  name: string;
 }

@@ -46,5 +46,5 @@ $ npm run start:dev
 ### Access the booking API
 ```bash
 # url
-http://localhost:4001/api
+http://localhost:4040/api
 ```

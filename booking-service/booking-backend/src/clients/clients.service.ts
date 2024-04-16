@@ -14,7 +14,7 @@ export class ClientsService {
   ) {}
 
   async create(data: CreateClientDto): Promise<any> {
-    const name = data.clientName;
+    const name = data.name;
     const apikey = generateApiKey();
 
     try {
@@ -58,11 +58,33 @@ export class ClientsService {
     }
   }
 
-  update(id: number, updateClientDto: UpdateClientDto) {
-    return `This action updates a #${id} client`;
+  async update(id: string, data: UpdateClientDto) {
+    try {
+      await this.clientRepository.update(id, data);
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Client updated !',
+      };
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Sorry, something went wrong',
+      };
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} client`;
+  async remove(id: string) {
+    try {
+      await this.clientRepository.delete(id);
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Client deleted !',
+      };
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Sorry, something went wrong',
+      };
+    }
   }
 }
