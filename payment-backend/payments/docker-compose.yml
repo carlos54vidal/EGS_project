@@ -1,10 +1,8 @@
-version: '3'
-
 services:
   db:
     image: sqlite:latest
     volumes:
-      - ./payments/db.sqlite3:/var/lib/sqlite/db.sqlite3   # Mount SQLite database file
+      - ./db.sqlite3:/var/lib/sqlite/db.sqlite3   # Mount SQLite database file
     networks:
       - backend
 
@@ -12,7 +10,7 @@ services:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - ./payments:/payments   # Mount Django project directory
+      - .:/payments   # Mount Django project directory
     ports:
       - "10.139.0.0:8080:8080"
     depends_on:
