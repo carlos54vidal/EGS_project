@@ -17,7 +17,11 @@ services:
   web:
     build: .
     # image: payments-web-1
-    command: python manage.py runserver 0.0.0.0:8080
+    environment:
+      - DJANGO_SUPERUSER_USERNAME=admin
+      - DJANGO_SUPERUSER_EMAIL=admin@example.com
+      - DJANGO_SUPERUSER_PASSWORD=admin
+    command: .\entrypoint.bat
     volumes:
       - .:/payments   # Mount Django project directory
     ports:
