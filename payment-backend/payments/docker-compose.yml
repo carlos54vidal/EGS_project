@@ -21,7 +21,10 @@ services:
       - DJANGO_SUPERUSER_USERNAME=admin
       - DJANGO_SUPERUSER_EMAIL=admin@example.com
       - DJANGO_SUPERUSER_PASSWORD=admin
-    command: .\entrypoint.bat
+    command: >
+      sh -c "python manage.py migrate &&
+            python manage.py loaddata datadump.json &&
+            python manage.py runserver 0.0.0.0:8080"
     volumes:
       - .:/payments   # Mount Django project directory
     ports:
