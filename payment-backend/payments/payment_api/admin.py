@@ -12,7 +12,7 @@ class ClientsAdmin(admin.ModelAdmin):
     fields = (
         'name',
         'email',
-        'paypal_client_id',
+        'iban',
         'membership_plan',
         'unique_key',
         'state'
