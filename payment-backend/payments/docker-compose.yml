@@ -11,12 +11,13 @@ services:
       POSTGRES_PASSWORD: admin
     ports:
       - "5432:5432"
+    #network_mode: "host"
     networks:
       - backend
 
   web:
     build: .
-    # image: payments-web-1
+    image: payments:v1
     environment:
       - DJANGO_SUPERUSER_USERNAME=admin
       - DJANGO_SUPERUSER_EMAIL=admin@example.com
@@ -31,6 +32,7 @@ services:
       - "8080:8080"
     depends_on:
       - db
+    #network_mode: "host"
     networks:
       - backend
 

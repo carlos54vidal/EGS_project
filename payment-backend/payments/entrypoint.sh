@@ -17,4 +17,4 @@ python manage.py loaddata datadump.json
 python manage.py createsuperuser --no-input
 
 # Start the Django development server
-python manage.py runserver 0.0.0.0:8000
+python manage.py runserver 0.0.0.0:8080

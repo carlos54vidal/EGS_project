@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: payments
-        image: registry.deti/petcare/payments:v1
+        image: registry.deti/egs-petcare/payments:v1
         resources:
           requests:
             memory: "32Mi"
