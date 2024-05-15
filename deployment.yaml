@@ -1,0 +1,222 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payments
+  namespace: egs-petcare
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: payments
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: payments
+    spec:
+      containers:
+        - name: payments
+          image: registry.deti/egs-petcare/payments:v1        
+          env:
+            - name: DJANGO_SUPERUSER_USERNAME
+              value: admin
+            - name: DJANGO_SUPERUSER_EMAIL
+              value: admin@example.com
+            - name: DJANGO_SUPERUSER_PASSWORD
+              value: admin
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "10m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+#          livenessProbe:
+#            httpGet:
+#              path: /
+#              port: 8080 
+#            initialDelaySeconds: 3
+#            periodSeconds: 3
+          ports:
+            - containerPort: 8080
+#          volumeMounts:
+#            - name: data
+#              mountPath: /payments
+      restartPolicy: Always
+#      volumes:
+#        - name: data
+#          persistentVolumeClaim:
+#            claimName: postgres-pvc  # Name of the PersistentVolumeClaim for database storage
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payments
+  namespace: egs-petcare
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: http
+    traefik.ingress.kubernetes.io/router.middlewares: default-stripprefix@kubernetescrd
+spec:
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  selector:
+    app: payments
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: payments-ingress
+  namespace: egs-petcare  
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  ingressClassName: traefik
+  rules:
+  - host: app-egs-petcare.deti
+  - http:
+      paths:
+      - path: /payments
+        pathType: Prefix
+        backend:
+          service:
+            name: payments
+            port:
+              name: web
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paymentsdb
+  namespace: egs-petcare
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/frontend-entry-points: http,https
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+    traefik.ingress.kubernetes.io/redirect-permanent: "true"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: paymentsdb
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: paymentsdb
+    spec:
+      containers:
+        - name: paymentsdb
+          image: registry.deti/egs-petcare/paymentsdb:v1
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: paymentsdb
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: admin
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "10m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+#          volumeMounts:
+#            - name: data
+#              mountPath: /var/lib/postgresql/data
+      restartPolicy: Always
+#      volumes:
+#        - name: data
+#          persistentVolumeClaim:
+#            claimName: postgres-pvc  # Name of the PersistentVolumeClaim for database storage
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: paymentsdb
+  namespace: egs-petcare
+spec:
+  selector:
+    app: paymentsdb
+  ports:
+    - protocol: TCP
+      port: 5432
+
+# Create nginx deployment
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: egs-petcare
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - image: registry.deti/egs-petcare/nginx:v1
+          name: nginx
+          ports:
+            - containerPort: 80
+          resources: {}
+      restartPolicy: Always
+
+# Create Service for nginx
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  namespace: egs-petcare
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: nginx
+
+# Configure Traefik          
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-k3s
+  namespace: egs-petcare
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/frontend-entry-points: http,https
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+    traefik.ingress.kubernetes.io/redirect-permanent: "true"
+spec:
+  ingressClassName: traefik
+  rules:
+  - host: app-egs-petcare.deti
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx
+            port: 
+              number: 80
