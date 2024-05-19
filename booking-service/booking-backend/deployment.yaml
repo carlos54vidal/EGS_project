@@ -1,117 +1,111 @@
+# Create Booking-api deployment
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app
+  name: booking-api
   namespace: egs-petcare
 spec:
-  replicas: 5
+  replicas: 1
   selector:
     matchLabels:
-      app: app
+      app: booking-api
   template:
     metadata:
       labels:
-        app: app
+        app: booking-api
     spec:
       containers:
-        - name: app
-          image: registry.deti/egs-petcare/bookings:v1
-          resources:
-            requests:
-              memory: '32Mi'
-              cpu: '10m'
-            limits:
-              memory: '128Mi'
-              cpu: '500m'
-          ports:
-            - containerPort: 8080
+      - name: booking-api
+        image: registry.deti/egs-petcare/booking-api:v3
+        resources:
+          requests:
+            memory: "500Mi"
+            cpu: "10m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        ports:
+          - containerPort: 8040
+        env:
+        - name: DATABASE_HOST
+          value: "booking-db"
+        - name: DATABASE_PORT
+          value: "5432"
+        - name: DATABASE_NAME
+          value: "bookingservice"
+        - name: DATABASE_USER
+          value: "postgres"
+        - name: DATABASE_PASSWORD
+          value: "password"
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: app
-  namespace: prof
-spec:
-  ports:
-    - port: 80
-      targetPort: 8080
-  selector:
-    app: app
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: app-k3s
-  namespace: egs-petcare
-  annotations:
-    kubernetes.io/ingress.class: traefik
-    traefik.ingress.kubernetes.io/frontend-entry-points: http,https
-    traefik.ingress.kubernetes.io/redirect-entry-point: https
-    traefik.ingress.kubernetes.io/redirect-permanent: 'true'
-spec:
-  rules:
-    - host: app-egs-petcare.k3s
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: app
-                port:
-                  number: 80
----
+## Create Booking-db deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: postgres
+  name: booking-db
   namespace: egs-petcare
 spec:
-  replicas: 5
+  replicas: 1
   selector:
     matchLabels:
-      app: postgres
+      app: booking-db
   template:
     metadata:
       labels:
-        app: postgres
+        app: booking-db
     spec:
       containers:
-        - name: postgres
-          image: postgres:v1
-          env:
-            - name: POSTGRES_USER
-              value: postgres
-            - name: POSTGRES_PASSWORD
-              value: root
-            - name: POSTGRES_DB
-              value: bookingservice
-          volumeMounts:
-            - name: postgres-storage
-              mountPath: /var/lib/postgres/data
-          resources:
-            requests:
-              memory: '32Mi'
-              cpu: '10m'
-            limits:
-              memory: '128Mi'
-              cpu: '500m'
-          ports:
-            - containerPort: 8080
+      - name: booking-db
+        image: postgres:latest
+        env:  # environment variables 
+        - name: POSTGRES_DB  
+          value: "bookingservice"
+        - name: POSTGRES_USER
+          value: "postgres"
+        - name: POSTGRES_PASSWORD
+          value: "password"
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "10m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql/data 
       volumes:
-        - name: postgresql-storage
-          persistentVolumeClaim:
-            claimName: postgresql-pvc
+      - name: postgres-data
+        emptyDir: {}
+
+# Create Service for Booking-api
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres
+  name: booking-api
+  namespace: egs-petcare
 spec:
-  selector:
-    app: postgres
   ports:
-    - protocol: TCP
-      port: 5432
-      targetPort: 5432
+  - port: 8040
+    targetPort: 8040
+  selector:
+    app: booking-api
+
+## Create Service for Booking-db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: booking-db
+  namespace: egs-petcare
+spec:
+  ports:
+  - port: 5432
+    targetPort: 5432
+  selector:
+    app: booking-db
+      

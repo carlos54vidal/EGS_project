@@ -1,4 +1,3 @@
-
 services:
   db:
     image: postgres:latest
@@ -15,7 +14,7 @@ services:
     networks:
       - backend
 
-  web:
+  payments:
     build: .
     image: payments:v1
     environment:
@@ -27,7 +26,7 @@ services:
             python manage.py loaddata datadump.json &&
             python manage.py runserver 0.0.0.0:8080"
     volumes:
-      - .:/payments   # Mount Django project directory
+      - .:/payments # Mount Django project directory
     ports:
       - "8080:8080"
     depends_on:
