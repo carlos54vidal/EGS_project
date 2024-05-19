@@ -16,7 +16,7 @@ class PaymentsSerializer(serializers.ModelSerializer):
 class PaymentsCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payments
-        fields = ('client_unique_key', 'name', 'amount', 'created_at', 'updated_at')
+        fields = ('id', 'client_unique_key', 'name', 'amount', 'created_at', 'updated_at')
 
 
 class PaymentCompleteSerializer(serializers.ModelSerializer):

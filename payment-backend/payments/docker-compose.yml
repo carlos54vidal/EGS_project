@@ -1,5 +1,5 @@
 services:
-  db:
+  paymentsdb:
     image: postgres:latest
     container_name: db
     volumes:
@@ -17,6 +17,7 @@ services:
   payments:
     build: .
     image: payments:v1
+    container_name: web
     environment:
       - DJANGO_SUPERUSER_USERNAME=admin
       - DJANGO_SUPERUSER_EMAIL=admin@example.com
@@ -30,7 +31,7 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - db
+      - paymentsdb
     #network_mode: "host"
     networks:
       - backend

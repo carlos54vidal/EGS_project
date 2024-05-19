@@ -4,5 +4,5 @@ from .views import ClientsViewSet
 
 router = DefaultRouter()
 router.register('v1/payment', PaymentsViewSet)
-router.register('vi/checkout/<uuid:pk>', PaymentsViewSet)
+router.register('v1/checkout/<uuid:pk>', PaymentsViewSet)
 router.register('v1/registration', ClientsViewSet)
