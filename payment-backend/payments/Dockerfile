@@ -13,5 +13,5 @@ RUN pip install -r requirements.txt
 # RUN python manage.py createsuperuser --no-input
 # RUN docker exec -it payments-web-1 python manage.py migrate
 # Define the command to run your Django server
+EXPOSE 8080
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8080"]
-EXPOSE 8080 
