@@ -6,7 +6,11 @@ from rest_framework import status
 from drf_spectacular.utils import extend_schema
 from rest_framework.views import APIView
 from rest_framework.exceptions import MethodNotAllowed
-import json
+from django.http import JsonResponse
+from django.views import View
+from .forms import PaymentForm
+from .serializers import PaymentsSerializer
+import requests
 #from django.views import View
 
 from .models import Payments
@@ -19,6 +23,11 @@ from .serializers import PaymentCompleteSerializer
 from .models import Clients
 from .serializers import ClientsSerializer
 from .forms import ClientsForm
+import datetime
+from django.contrib import messages
+
+
+
 
 class PaymentsViewSet(viewsets.ModelViewSet):
     queryset = Payments.objects.all()
@@ -153,7 +162,7 @@ def process_payment(request, client_secret):
         if intent.status == 'succeeded':
             # Update the Payment model
             payment_id = intent.metadata['payment_id']
-            payment = Payment.objects.get(id=payment_id)
+            payment = Payments.objects.get(id=payment_id)
             payment.paid = True
             payment.save()
 
@@ -162,3 +171,94 @@ def process_payment(request, client_secret):
 
     context = {'client_secret': client_secret}
     return render(request, 'process_payment.html', context)
+
+class SendPostRequestView(APIView):
+    def post(self, request):
+        form = PaymentForm(request.POST)
+        if form.is_valid():
+            payment_data = form.cleaned_data
+            serializer = PaymentsSerializer(data=payment_data)
+            if serializer.is_valid():
+                amount = serializer.validated_data['amount']
+                description = serializer.validated_data['description']
+                current_datetime = datetime.datetime.now().isoformat()
+                payload = {
+                    "merchant": {
+                        "terminalId": 66779,
+                        "channel": "web",
+                        "merchantTransactionId": "teste 1"
+                    },
+                    "transaction": {
+                        "transactionTimestamp": current_datetime,
+                        "description": description,
+                        "moto": False,
+                        "paymentType": "PURS",
+                        "amount": {
+                            "value": amount,
+                            "currency": "EUR"
+                        },
+                        "paymentMethod": [
+                            "CARD",
+                            "REFERENCE",
+                            "QRCODE",
+                            "MBWAY"
+                        ]                        
+                    }                    
+                }
+                url = "https://api.qly.sibspayments.com/sibs/spg/v2/payments"
+                headers = {
+                    "X-IBM-Client-Id": "c59a9673-199a-4a6e-9767-4c6aa70fc910",
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer 0267adfae94c224be1b374be2ce7b298f0.eyJlIjoiMjAyODgxNjU2NDgxMSIsInJvbGVzIjoiTUFOQUdFUiIsInRva2VuQXBwRGF0YSI6IntcIm1jXCI6XCI1MDU0MjVcIixcInRjXCI6XCI2Njc3OVwifSIsImkiOiIxNzEzMjgzNzY0ODExIiwiaXMiOiJodHRwczovL3FseS5zaXRlMS5zc28uc3lzLnNpYnMucHQvYXV0aC9yZWFsbXMvREVWLlNCTy1JTlQuUE9SVDEiLCJ0eXAiOiJCZWFyZXIiLCJpZCI6Ijh6RWtRQUJaM2NlOTY3MzljMWIxNGU0NTBjYTNhMDVjMzBkNWJmM2QwYSJ9.51730f0d62b69c39b0a2bb5d4547f02e13e5110138946333323295414f94620368d060e4d6e90577d4cc555623bfefb3215655f5d8ad05c5bb0476f451a78cbe"
+                }
+                response = requests.post(url, headers=headers, json=payload)
+
+
+                if response.status_code == 200:
+                    response_data = response.json()
+                    transaction_id = response_data.get("transactionId")
+                    status = response_data.get("status")
+                    transaction_signature = response_data.get("transactionSignature")
+
+                    # JavaScript code to get the phone number from the input field
+                    phone_value = request.POST.get('phone')  # Get the phone number from the request
+
+                    if transaction_id and transaction_signature:
+                        second_url = f"https://api.qly.sibspayments.com/sibs/spg/v2/payments/{transaction_id}/mbway-id/purchase"
+                        second_headers = {
+                            "Content-Type": "application/json",
+                            "X-IBM-Client-Id": "c59a9673-199a-4a6e-9767-4c6aa70fc910",
+                            "Authorization": f"Digest {transaction_signature}"
+                        }
+                        second_payload = {
+                            "customerPhone": phone_value
+                        }
+                        second_response = requests.post(second_url, headers=second_headers, json=second_payload)
+
+                        if second_response.status_code == 200:
+                            second_response_data = second_response.json()
+                            purchase_status = second_response_data.get("status")
+                            return JsonResponse({
+                                'status': 'success',
+                                'transactionId': transaction_id,
+                                'paymentStatus': status,
+                                'purchaseStatus': purchase_status
+                            }, status=200)
+                        else:
+                            return JsonResponse({
+                                'status': 'error',
+                                'message': 'Second request failed',
+                                'details': second_response.text
+                            }, status=second_response.status_code)
+                    else:
+                        return JsonResponse({'status': 'error', 'message': 'Transaction ID or Signature not found'}, status=400)
+                else:
+                    return JsonResponse({'status': 'error', 'message': response.text}, status=response.status_code)
+            else:
+                return JsonResponse({'status': 'error', 'errors': serializer.errors}, status=400)
+        else:
+            return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
+        
+    def get(self, request):
+        form = PaymentForm()
+        return render(request, 'mb-way.html', {'form': form})

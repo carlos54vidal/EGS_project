@@ -92,7 +92,7 @@ DATABASES = {
         'NAME': 'paymentsdb',
         'USER': 'postgres',
         'PASSWORD': 'admin',
-        'HOST': 'paymentsdb',
+        'HOST': 'localhost',
         'PORT': '5432',
     }
 }
@@ -156,4 +156,8 @@ SPECTACULAR_SETTINGS = {
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
     # OTHER SETTINGS
+}
+
+OPTIONS= {
+      'client_encoding': 'UTF-8',
 }

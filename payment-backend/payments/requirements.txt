@@ -25,6 +25,7 @@ oauthlib==3.2.2
 paho-mqtt==1.6.1
 platformdirs==4.2.0
 psycopg2==2.9.9
+psycopg2-binary==2.9.9
 pycparser==2.22
 PyJWT==2.8.0
 python-etcd==0.4.5
