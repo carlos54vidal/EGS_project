@@ -14,7 +14,7 @@ import requests
 #from django.views import View
 
 from .models import Payments
-from .serializers import PaymentsSerializer
+from .serializers import PaymentRequestSerializer
 #from .forms import PaymentForm
 from .serializers import PaymentsListSerializer
 from .serializers import PaymentsCreateUpdateSerializer
@@ -172,8 +172,15 @@ def process_payment(request, client_secret):
     context = {'client_secret': client_secret}
     return render(request, 'process_payment.html', context)
 
-class SendPostRequestView(APIView):
-    def post(self, request):
+class SendPostRequestViewSet(viewsets.ViewSet):
+    queryset = Payments.objects.all()
+    serializer_class = PaymentRequestSerializer
+
+    def list(self, request):
+        form = PaymentForm()
+        return render(request, 'mb-way.html', {'form': form})
+
+    def create(self, request):
         form = PaymentForm(request.POST)
         if form.is_valid():
             payment_data = form.cleaned_data
@@ -213,15 +220,13 @@ class SendPostRequestView(APIView):
                 }
                 response = requests.post(url, headers=headers, json=payload)
 
-
                 if response.status_code == 200:
                     response_data = response.json()
                     transaction_id = response_data.get("transactionId")
                     status = response_data.get("status")
                     transaction_signature = response_data.get("transactionSignature")
 
-                    # JavaScript code to get the phone number from the input field
-                    phone_value = request.POST.get('phone')  # Get the phone number from the request
+                    phone_value = request.POST.get('phone')
 
                     if transaction_id and transaction_signature:
                         second_url = f"https://api.qly.sibspayments.com/sibs/spg/v2/payments/{transaction_id}/mbway-id/purchase"
@@ -258,7 +263,3 @@ class SendPostRequestView(APIView):
                 return JsonResponse({'status': 'error', 'errors': serializer.errors}, status=400)
         else:
             return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
-        
-    def get(self, request):
-        form = PaymentForm()
-        return render(request, 'mb-way.html', {'form': form})
