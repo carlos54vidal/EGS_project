@@ -9,13 +9,13 @@ async function bootstrap() {
 
   // enable cors and global prefix for apis
   app.enableCors();
-  app.setGlobalPrefix('v1/');
+  app.setGlobalPrefix('booking-api/v1');
   app.useGlobalPipes(new ValidationPipe());
 
   // Define a middleware to intercept all incoming requests
   app.use((req: Request, res: Response, next: Function) => {
     // Check if the request is for the root endpoint
-    if (req.url === '/') {
+    if (req.url === '/booking-api') {
       // If so, send a custom message
       res.send('PETCARE - Welcome to the Booking API!');
     } else {
@@ -36,7 +36,7 @@ async function bootstrap() {
     ignoreGlobalPrefix: false,
   });
   // const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('booking-api/api', app, document);
 
   await app.listen(8040);
 }

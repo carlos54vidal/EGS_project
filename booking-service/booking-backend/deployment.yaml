@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: booking-api
-        image: registry.deti/egs-petcare/booking-api:v3
+        image: registry.deti/egs-petcare/booking-api:v6
         resources:
           requests:
             memory: "500Mi"
@@ -29,13 +29,13 @@ spec:
           - containerPort: 8040
         env:
         - name: DATABASE_HOST
-          value: "booking-db"
+          value: "booking-db-service"
         - name: DATABASE_PORT
           value: "5432"
         - name: DATABASE_NAME
           value: "bookingservice"
         - name: DATABASE_USER
-          value: "postgres"
+          value: "user"
         - name: DATABASE_PASSWORD
           value: "password"
 ---
@@ -62,7 +62,7 @@ spec:
         - name: POSTGRES_DB  
           value: "bookingservice"
         - name: POSTGRES_USER
-          value: "postgres"
+          value: "user"
         - name: POSTGRES_PASSWORD
           value: "password"
         resources:
@@ -75,18 +75,56 @@ spec:
         ports:
         - containerPort: 5432
         volumeMounts:
-        - name: postgres-data
+        - name: booking-storage
           mountPath: /var/lib/postgresql/data 
       volumes:
-      - name: postgres-data
+      - name: booking-storage
         emptyDir: {}
+
+# Create nginx deployment
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: egs-petcare
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - image: nginx:alpine
+          name: nginx
+          ports:
+            - containerPort: 80
+          resources: {}
+          volumeMounts:
+            - name: nginx-conf
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+              readOnly: true
+      restartPolicy: Always
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: nginx-conf
+            items:
+               - key: nginx.conf
+                 path: nginx.conf
 
 # Create Service for Booking-api
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: booking-api
+  name: booking-api-service
   namespace: egs-petcare
 spec:
   ports:
@@ -100,7 +138,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: booking-db
+  name: booking-db-service
   namespace: egs-petcare
 spec:
   ports:
@@ -108,4 +146,79 @@ spec:
     targetPort: 5432
   selector:
     app: booking-db
-      
+
+# Create Service for nginx
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  namespace: egs-petcare
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: nginx
+
+---
+# Create Ingress Resource - defines the rules for routing traffic
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: booking-petcare-k3s
+  namespace: egs-petcare
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/frontend-entry-points: http,https
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+    traefik.ingress.kubernetes.io/redirect-permanent: "true"
+spec:
+  rules:
+  - host: booking-petcare.deti
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx
+            port: 
+              number: 80
+
+# NGINX Config map
+# Configure Nginx to act as a reverse proxy.
+# Important: Mount this ConfigMap as a volume in the Nginx Deployment and configure Nginx to use it
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-conf
+  namespace: egs-petcare
+data:
+  nginx.conf: |
+    user  nginx;
+    worker_processes  1;
+    error_log  /var/log/nginx/error.log warn;
+    pid        /var/run/nginx.pid;
+    events {
+            worker_connections  1024;
+    }
+    http {
+        include       /etc/nginx/mime.types;
+        default_type  application/octet-stream;
+        sendfile        on;
+        server {
+            listen 80;
+            server_name booking-petcare.deti;
+            
+            location /booking-api {
+                proxy_pass http://booking-api-service:8040;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+
+             }
+        }
+    }

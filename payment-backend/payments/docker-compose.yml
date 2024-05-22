@@ -1,7 +1,7 @@
 services:
-  paymentsdb:
+  payments-db-service:
     image: postgres:latest
-    container_name: db
+    container_name: payments-db
     volumes:
       - /payments:/var/lib/postgresql/data
     environment:
@@ -31,7 +31,7 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - paymentsdb
+      - payments-db-service
     #network_mode: "host"
     networks:
       - backend

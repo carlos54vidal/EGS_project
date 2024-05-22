@@ -1,17 +1,20 @@
 version: '3.8'
 
 services:
-  booking-db:
+  booking-db-service:
     image: postgres:latest
     container_name: booking-db
     environment:
-      POSTGRES_USER: postgres
+      POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: bookingservice
     ports:
       - '5432:5432'
+    #ports:
+    #  - '5433:5433'
     volumes:
       - ./data:/var/lib/postgresql/data
+    #command: ["postgres", "-p", "5433"] # ensure PostgreSQL listens on port 5433
 
   app:
     container_name: booking-api
@@ -21,6 +24,6 @@ services:
     ports:
       - '8040:8040'
     depends_on:
-      - booking-db
+      - booking-db-service
     volumes:
       - .:/app

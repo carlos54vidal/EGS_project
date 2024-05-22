@@ -1,152 +1,45 @@
-####################### Payments 
+# Create Booking-api deployment
 ---
-## Payment-app deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: payments
+  name: booking-api
   namespace: egs-petcare
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: payments
+      app: booking-api
   template:
     metadata:
       labels:
-        app: payments
+        app: booking-api
     spec:
       containers:
-        - name: payments
-          image: registry.deti/egs-petcare/payments:v1
-          env:
-            - name: DJANGO_SUPERUSER_USERNAME
-              value: admin
-            - name: DJANGO_SUPERUSER_EMAIL
-              value: admin@example.com
-            - name: DJANGO_SUPERUSER_PASSWORD
-              value: admin
-          resources:
-            requests:
-              memory: "32Mi"
-              cpu: "10m"
-            limits:
-              memory: "128Mi"
-              cpu: "500m"
-          ports:
-            - containerPort: 8080
+      - name: booking-api
+        image: registry.deti/egs-petcare/booking-api:v7
+        resources:
+          requests:
+            memory: "500Mi"
+            cpu: "10m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        ports:
+          - containerPort: 8040
+        env:
+        - name: DATABASE_HOST
+          value: "booking-db-service"
+        - name: DATABASE_PORT
+          value: "5432"
+        - name: DATABASE_NAME
+          value: "bookingservice"
+        - name: DATABASE_USER
+          value: "user"
+        - name: DATABASE_PASSWORD
+          value: "password"
 ---
-## Payment-app service
-apiVersion: v1
-kind: Service
-metadata:
-  name: payments
-  namespace: egs-petcare
-spec:
-  ports:
-    - protocol: TCP
-      port: 8080
-      targetPort: 8080
-  selector:
-    app: payments
----
-## Payment-db deployment
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: paymentsdb
-  namespace: egs-petcare
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: paymentsdb
-  template:
-    metadata:
-      labels:
-        app: paymentsdb
-    spec:
-      containers:
-        - name: paymentsdb
-          image: postgres:latest
-          ports:
-            - containerPort: 5432
-          env:
-            - name: POSTGRES_DB
-              value: paymentsdb
-            - name: POSTGRES_USER
-              value: postgres
-            - name: POSTGRES_PASSWORD
-              value: admin
-          resources:
-            requests:
-              memory: "32Mi"
-              cpu: "10m"
-            limits:
-              memory: "128Mi"
-              cpu: "500m"
----
-## Payment-db service
-apiVersion: v1
-kind: Service
-metadata:
-  name: paymentsdb
-  namespace: egs-petcare
-spec:
-  selector:
-    app: paymentsdb
-  ports:
-    - protocol: TCP
-      port: 5432
-      targetPort: 5432
-
-################################### Bookings 
-
----
-## Booking-app deployment
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: booking-app
-  namespace: egs-petcare
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: booking-app
-  template:
-    metadata:
-      labels:
-        app: booking-app
-    spec:
-      containers:
-        - name: booking-app
-          image: registry.deti/egs-petcare/booking-app:v1
-          imagePullPolicy: Always # always pull the image from the container registry
-          resources:
-            requests:
-              memory: '32Mi'
-              cpu: '10m'
-            limits:
-              memory: '128Mi'
-              cpu: '500m'
-          ports:
-            - containerPort: 8040
----
-## Booking-app service
-apiVersion: v1
-kind: Service
-metadata:
-  name: booking-app
-  namespace: egs-petcare
-spec:
-  ports:
-    - port: 8040
-      targetPort: 8040
-  selector:
-    app: booking-app
----
-## Booking-db deployment
+## Create Booking-db deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -163,32 +56,120 @@ spec:
         app: booking-db
     spec:
       containers:
-        - name: booking-db
-          image: postgres:latest
-          imagePullPolicy: Always # always pull the image from the container registry
-          resources:
-            requests:
-              memory: '32Mi'
-              cpu: '10m'
-            limits:
-              memory: '128Mi'
-              cpu: '500m'
-          ports:
-            - containerPort: 5432
-## Booking-db service
-apiVersion: v1
-kind: Service
+      - name: booking-db
+        image: postgres:latest
+        env:  # environment variables 
+        - name: POSTGRES_DB  
+          value: "bookingservice"
+        - name: POSTGRES_USER
+          value: "user"
+        - name: POSTGRES_PASSWORD
+          value: "password"
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "10m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: booking-storage
+          mountPath: /var/lib/postgresql/data 
+      volumes:
+      - name: booking-storage
+        emptyDir: {}
+        
+# Create payments-api deployment
+---
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: booking-db
+  name: payments
   namespace: egs-petcare
 spec:
-  ports:
-    - port: 5432
-      targetPort: 5432
+  replicas: 1
   selector:
-    app: booking-db
-
-############################################ NGINX 
+    matchLabels:
+      app: payments
+  template:
+    metadata:
+      labels:
+        app: payments
+    spec:
+      containers:
+      - name: payments
+        image: registry.deti/egs-petcare/payments:v2
+        resources:
+          requests:
+            memory: "500Mi"
+            cpu: "10m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        ports:
+          - containerPort: 8080
+        env:
+        - name: DATABASE_HOST
+          value: "payments-db-service"
+        - name: DATABASE_PORT
+          value: "5432"
+        - name: DATABASE_NAME
+          value: "paymentsdb"
+        - name: DATABASE_USER
+          value: "postgres"
+        - name: DATABASE_PASSWORD
+          value: "admin"
+        - name: DJANGO_SUPERUSER_USERNAME
+          value: admin
+        - name: DJANGO_SUPERUSER_EMAIL
+          value: admin@example.com
+        - name: DJANGO_SUPERUSER_PASSWORD
+          value: admin
+  
+# Create payments-db deployment
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paymentsdb
+  namespace: egs-petcare
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: paymentsdb
+  template:
+    metadata:
+      labels:
+        app: paymentsdb
+    spec:
+      containers:
+      - name: paymentsdb
+        image: postgres:latest
+        env:  # environment variables 
+        - name: POSTGRES_DB  
+          value: "paymentsdb"
+        - name: POSTGRES_USER
+          value: "postgres"
+        - name: POSTGRES_PASSWORD
+          value: "admin"
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "10m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: db-data
+          mountPath: /var/lib/postgresql/data 
+      volumes:
+      - name: db-data
+        emptyDir: {}
 
 # Create nginx deployment
 ---
@@ -215,8 +196,6 @@ spec:
             - containerPort: 80
           resources: {}
           volumeMounts:
-            - name: nginx-static
-              mountPath: /var/www/static
             - name: nginx-conf
               mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf
@@ -227,17 +206,72 @@ spec:
           configMap:
             name: nginx-conf
             items:
-               - key: nginx.conf
-                 path: nginx.conf
-        - name: nginx-static
-          persistentVolumeClaim:
-            claimName: nginx-static-pvc
+              - key: nginx.conf
+                path: nginx.conf
+
+
+# Create Service for Booking-api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: booking-api-service
+  namespace: egs-petcare
+spec:
+  ports:
+  - port: 8040
+    targetPort: 8040
+  selector:
+    app: booking-api
+
+## Create Service for Booking-db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: booking-db-service
+  namespace: egs-petcare
+spec:
+  ports:
+  - port: 5432
+    targetPort: 5432
+  selector:
+    app: booking-db
+  
+# Create Service for Payments-api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payments-service
+  namespace: egs-petcare
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    app: payments
+
+# Create Service for Payments-db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payments-db-service
+  namespace: egs-petcare
+spec:
+  ports:
+  - port: 5432
+    targetPort: 5432
+  selector:
+    app: paymentsdb
+
 # Create Service for nginx
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx
+  name: nginx-service
   namespace: egs-petcare
 spec:
   ports:
@@ -246,14 +280,12 @@ spec:
   selector:
     app: nginx
 
-############################################## TRAEFIK
-
-# Configure Traefik
 ---
+# Create Ingress Resource - defines the rules for routing traffic
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: app-k3s
+  name: petcare-k3s
   namespace: egs-petcare
   annotations:
     kubernetes.io/ingress.class: traefik
@@ -261,15 +293,60 @@ metadata:
     traefik.ingress.kubernetes.io/redirect-entry-point: https
     traefik.ingress.kubernetes.io/redirect-permanent: "true"
 spec:
-  ingressClassName: traefik
   rules:
-    - host: app-egs-petcare.deti
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: nginx
-                port:
-                  number: 80
+  - host: petcare.deti
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx-service
+            port: 
+              number: 80
+
+# NGINX Config map
+# Configure Nginx to act as a reverse proxy.
+# Important: Mount this ConfigMap as a volume in the Nginx Deployment and configure Nginx to use it
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-conf
+  namespace: egs-petcare
+data:
+  nginx.conf: |
+    user  nginx;
+    worker_processes  1;
+    error_log  /var/log/nginx/error.log warn;
+    pid        /var/run/nginx.pid;
+    events {
+            worker_connections  1024;
+    }
+    http {
+        include       /etc/nginx/mime.types;
+        default_type  application/octet-stream;
+        sendfile        on;
+        server {
+            listen 80 default_server;
+
+            server_name _;
+
+            location /booking-api {
+                proxy_pass http://booking-api-service:8040;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+             }
+
+            location /payments {
+                proxy_pass http://payments-service:8080;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+             }
+        }
+    }
+
