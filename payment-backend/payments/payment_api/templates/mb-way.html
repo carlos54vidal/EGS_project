@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<<<<<<< Updated upstream
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -35,8 +36,69 @@
             </div>
         </div>
     </div>
+=======
+  <head>
+>>>>>>> Stashed changes
 
-<script>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,
+      initial-scale=1.0">
+    <link rel="icon" href="{% static 'favicon.ico' %}"
+      type="image/x-icon">
+    <title>MB-WAY Form</title>
+    <style type="text/css">      
+      h1{text-align: center;}      
+    </style>		
+  </head>
+  <body>
+    <div class="DynamicForms__StyledRouterWrapper-sc-124xayw-0 dIxOkX">
+      <div class="InstrumentForm__StyledInstrumentForm-sc-1gz9oaa-0
+        hOLkNQ">
+        <div
+          class="InstrumentFormHeader__StyledInstrumentFormHeader-sc-1xtju1r-0
+          bozRne">
+          <div class="label" align="center">MB WAY</div>
+          <div class="logo-container" align="center"> <img
+              class="logo-color"
+src="https://cdn.switchpayments.com/libs/dynamic-forms/img/payment-methods-logos/mbway-color.png"
+              alt="MB WAY logo"> </div>
+        </div>
+        <div class="card card-body">	
+					
+					<h1>{{payments.amount}}€</h1>
+					
+        </div>
+        <div class="FormContainer__StyledFormContainer-g1spo-0 IFTXN"
+          align="center">
+          <form class="rjsf">
+            <div class="form-helpers__StyledFieldsetWrapper-kwlz7r-0
+              iAbqid">
+              <fieldset id="root">
+                <div
+                  class="FormFieldTemplate__StyledFormFieldTemplate-wtn2u3-0
+                  ZceMM">
+                  <div class="input-label-container"> <label
+                      for="root_phone">Telefone*</label>
+                    <div class="input-container"> <input
+                        class="form-control" id="root_phone"
+                        label="Telefone" required=""
+                        placeholder="9XXXXXXXX" type="text"> </div>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+          </form>
+        </div>
+        <div
+          class="ButtonsContainer__StyledButtonsContainer-sc-146l0pg-0
+          iWFvAL" align="center"> <button
+            class="Button__StyledButton-sc-1ptprjf-0
+            PrimaryButton__StyledPrimaryButton-sc-1bjfjfx-0 eZvWLg
+            krvnFP" id="confirmButton">Confirmar</button> </div>
+      </div>
+    </div>
+    <script>
 // JavaScript code to handle form submission
 document.getElementById('confirmButton').addEventListener('click', function(event) {
   event.preventDefault(); // Prevent the default form submission
@@ -82,6 +144,5 @@ document.getElementById('confirmButton').addEventListener('click', function(even
   xhr.send(payload);
 });
 </script>
-
-</body>
+  </body>
 </html>
