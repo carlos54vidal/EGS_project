@@ -5,8 +5,7 @@
 	<meta id="meta" name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
 
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-
-
+	
 	<style type="text/css">
 		body{
 			background-color: #f0f0f0;
@@ -14,7 +13,16 @@
 		}
 		h1{text-align: center;}
 		h2{text-align: center;}
-
+		.custom-btn {
+            height: 45px; /* Adjust the height as needed */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .custom-btn img {
+            height: 20px; /* Adjust the height of the image */
+            margin-right: 10px;
+        }
 	</style>		
 
 </head>
@@ -32,10 +40,14 @@
 					<h2>Total: {{payments.amount}}€</h2>
 					<hr>
 					<div id="paypal-button-container"></div>
+					<!-- Add the MB Way button here -->
+                    <button type="button" onclick="window.location.href='/v1/mb-way/'" class="btn btn-dark mt-3 custom-btn">
+						Pay with&nbsp;
+						<img src="{% static 'images\mb-way.png' %}" alt=" MB Way" style="height: 25px; margin-right: 10px;">
+					</button>
 				</div>
 			</div>
 			<div class="col-lg">
-				
 			</div>
 		</div>
 	</div>
