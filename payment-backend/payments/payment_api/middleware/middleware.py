@@ -1,4 +1,4 @@
-from payment_api.models import Clients
+'''from payment_api.models import Clients
 
 class PaymentsMiddleware:
     def __init__(self, get_response):
@@ -23,4 +23,4 @@ class PaymentsMiddleware:
 
         response = self.get_response(request)
         # Code to be executed for each request/response after the view is called
-        return response
+        return response'''

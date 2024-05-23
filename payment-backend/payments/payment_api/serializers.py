@@ -1,12 +1,12 @@
 from rest_framework import serializers
-from .models import Payments
-from .models import Clients
+from .models import Payments, Clients
 
 class PaymentsListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payments
         fields = ('id', 'client_unique_key', 'name', 'amount', 'paid', 'created_at', 'updated_at')
 
+  
 class PaymentsSerializer(serializers.ModelSerializer):    
     amount = serializers.DecimalField(max_digits=10, decimal_places=2)
     description = serializers.CharField(max_length=255)

@@ -1,28 +1,20 @@
 from django.shortcuts import render, redirect
 # from django.http import JsonResponse
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.response import Response
-from rest_framework import status
 from drf_spectacular.utils import extend_schema
 from rest_framework.views import APIView
 from rest_framework.exceptions import MethodNotAllowed
 from django.http import JsonResponse
 from django.views import View
-from .forms import PaymentForm
-from .serializers import PaymentsSerializer
+from .serializers import PaymentsSerializer, PaymentRequestSerializer, PaymentsListSerializer, PaymentsCreateUpdateSerializer, PaymentCompleteSerializer, ClientsSerializer
 import requests
 #from django.views import View
 
-from .models import Payments
-from .serializers import PaymentRequestSerializer
+from .models import Payments, Clients
 #from .forms import PaymentForm
-from .serializers import PaymentsListSerializer
-from .serializers import PaymentsCreateUpdateSerializer
-from .serializers import PaymentCompleteSerializer
 
-from .models import Clients
-from .serializers import ClientsSerializer
-from .forms import ClientsForm
+from .forms import ClientsForm, PaymentForm
 import datetime
 from django.contrib import messages
 
@@ -174,10 +166,16 @@ def process_payment(request, client_secret):
 
 class SendPostRequestViewSet(viewsets.ViewSet):
     queryset = Payments.objects.all()
-    serializer_class = PaymentRequestSerializer
+    serializer_class = PaymentsSerializer
 
     def list(self, request):
+        #form = PaymentForm()        
+        print(request)
+        return render(request, 'mb-way.html')
+    
+    def retrieve(self, request):
         form = PaymentForm()
+        print(request)
         return render(request, 'mb-way.html', {'form': form})
 
     def create(self, request):
