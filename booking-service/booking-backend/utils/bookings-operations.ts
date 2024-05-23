@@ -1,5 +1,11 @@
 import { ReadBooking } from 'src/bookings/bookings.interface';
 
+export function isISODateString(dateString) {
+  const isoDatePattern =
+    /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(\.\d+)?(Z|([+-]\d{2}:\d{2}))$/;
+  return isoDatePattern.test(dateString);
+}
+
 // Check if there is overlapping with another booking
 export function isOverlapping(
   existingBooking: ReadBooking,

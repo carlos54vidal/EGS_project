@@ -10,7 +10,13 @@ import {
   Req,
   Query,
 } from '@nestjs/common';
-import { ApiSecurity, ApiOperation, ApiTags, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiSecurity,
+  ApiOperation,
+  ApiTags,
+  ApiQuery,
+  ApiBody,
+} from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
@@ -34,6 +40,7 @@ export class BookingsController {
     summary: 'Add a new booking',
     description: 'Create a new booking',
   })
+  @ApiBody({ type: CreateBookingDto })
   create(@Req() request: Request, @Body() data: CreateBookingDto) {
     const key = this.getApiKey(request);
     return this.bookingsService.create(key, data);
@@ -87,8 +94,10 @@ export class BookingsController {
   ) {
     const key = this.getApiKey(request);
 
-    if (month && year) {
+    if ((month && year) || month || year) {
       // If month and year query parameters are provided, call a service method to fetch bookings for that month
+      console.log('\nFind booking by month and year');
+
       return this.bookingsService.findByMonthAndYear(key, month, year);
     } else if (date) {
       // If date query parameter is provided, call a service method to fetch bookings for that specific date
@@ -97,8 +106,8 @@ export class BookingsController {
       // If start and end datetime query parameters are provided, call a service method to fetch bookings within that datetime range
       return this.bookingsService.findByDatetimeRange(
         key,
-        new Date(start),
-        new Date(end),
+        start,
+        end,
       );
     } else {
       // Otherwise, return all bookings

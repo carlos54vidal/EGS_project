@@ -6,7 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ClientsService } from 'src/clients/clients.service';
 import { ReadBooking } from './bookings.interface';
-import { isOverlapping } from 'utils/bookings-operations';
+import { isISODateString, isOverlapping } from 'utils/bookings-operations';
 
 @Injectable()
 export class BookingsService {
@@ -31,11 +31,8 @@ export class BookingsService {
           relations: ['client'],
           where: { client: { id: clientId }, datetime: datetime },
         });
-        console.log('\nClient Bookings ');
-        console.log(isBookingExists);
 
         if (isBookingExists.length === 0) {
-          console.log('\nBooking datetime dosent exists!');
           // Check if there is overlapping with other bookings
           let overlappingExists: boolean = false;
           const bookings = await this.bookingRepository.find({
@@ -50,14 +47,12 @@ export class BookingsService {
                 duration: duration,
               })
             ) {
-              console.log('Overlapping !! ');
               overlappingExists = true; // Overlapping booking found
               return; // Exit from forEach loop early
             }
           });
 
           if (!overlappingExists) {
-            console.log('Overlapping dosent exists ! Creating booking ');
             const booking = this.bookingRepository.create({
               datetime,
               duration,
@@ -98,11 +93,8 @@ export class BookingsService {
             relations: ['client'],
             where: { client: { id: clientId }, datetime: datetime },
           });
-          console.log('\nClient Bookings ');
-          console.log(isBookingExists);
 
           if (isBookingExists.length === 0) {
-            console.log('\nBooking datetime dosent exists!');
             // Check if there is overlapping with other bookings
             let overlappingExists: boolean = false;
             const bookings = await this.bookingRepository.find({
@@ -117,14 +109,12 @@ export class BookingsService {
                   duration: duration,
                 })
               ) {
-                console.log('Overlapping !! ');
                 overlappingExists = true; // Overlapping booking found
                 return; // Exit from forEach loop early
               }
             });
 
             if (!overlappingExists) {
-              console.log('Overlapping dosent exists ! Creating booking ');
               const booking = this.bookingRepository.create({
                 datetime,
                 duration,
@@ -228,6 +218,11 @@ export class BookingsService {
 
   async findByMonthAndYear(key: string, month: number, year: number) {
     const clientBookings: ReadBooking[] = [];
+
+    console.log('month:', month);
+
+    console.log('year:', year);
+
     try {
       // Identify clientId through api-key
       const client = await this.clientsService.findOne(key);
@@ -239,21 +234,47 @@ export class BookingsService {
         where: { client: { id: clientId } },
       });
 
-      bookings.map((booking) => {
-        console.log(booking);
-        const bookingDateYear = booking.datetime.getFullYear();
-        console.log(bookingDateYear);
-        const bookingDateMonth = booking.datetime.getMonth() + 1;
-        console.log(bookingDateMonth);
-        if (bookingDateYear == year && bookingDateMonth == month) {
-          clientBookings.push({
-            bookingId: booking.id,
-            datetime: booking.datetime,
-            duration: booking.duration,
-            description: booking.description,
-          });
-        }
-      });
+      if (month && year) {
+        //console.log('Month and year');
+        bookings.map((booking) => {
+          const bookingDateYear = booking.datetime.getFullYear();
+          const bookingDateMonth = booking.datetime.getMonth() + 1;
+          if (bookingDateYear == year && bookingDateMonth == month) {
+            clientBookings.push({
+              bookingId: booking.id,
+              datetime: booking.datetime,
+              duration: booking.duration,
+              description: booking.description,
+            });
+          }
+        });
+      } else if (month) {
+        //console.log('Month');
+        bookings.map((booking) => {
+          const bookingDateMonth = booking.datetime.getMonth() + 1;
+          if (bookingDateMonth == month) {
+            clientBookings.push({
+              bookingId: booking.id,
+              datetime: booking.datetime,
+              duration: booking.duration,
+              description: booking.description,
+            });
+          }
+        });
+      } else if (year) {
+        //console.log('year');
+        bookings.map((booking) => {
+          const bookingDateYear = booking.datetime.getFullYear();
+          if (bookingDateYear == year) {
+            clientBookings.push({
+              bookingId: booking.id,
+              datetime: booking.datetime,
+              duration: booking.duration,
+              description: booking.description,
+            });
+          }
+        });
+      }
 
       return clientBookings;
     } catch (error) {
@@ -298,9 +319,19 @@ export class BookingsService {
     }
   }
 
-  async findByDatetimeRange(key: string, start: Date, end: Date) {
+  async findByDatetimeRange(key: string, start: string, end: string) {
     const clientBookings: ReadBooking[] = [];
     try {
+      if (!isISODateString(start) && isISODateString(end)) {
+        return {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: 'The DateTime is not in ISO format.',
+        };
+      }
+
+      const startDate = new Date(start);
+      const endDate = new Date(end);
+
       // Identify clientId through api-key
       const client = await this.clientsService.findOne(key);
       const clientId = client.id;
@@ -311,9 +342,15 @@ export class BookingsService {
         where: { client: { id: clientId } },
       });
 
+      console.log(start);
+
+      console.log(end);
+
       bookings.map((booking) => {
         const bookingDate = booking.datetime;
-        if (bookingDate >= start && bookingDate <= end) {
+        console.log(bookingDate);
+        if (bookingDate >= startDate && bookingDate <= endDate) {
+          console.log('Inside');
           clientBookings.push({
             bookingId: booking.id,
             datetime: booking.datetime,

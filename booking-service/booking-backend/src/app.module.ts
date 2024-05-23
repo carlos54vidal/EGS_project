@@ -16,9 +16,9 @@ import { Booking } from './bookings/entities/booking.entity';
     TypeOrmModule.forRoot({
       type: 'postgres',
       // postgresql://username:password@host:port/database
-      //url: 'postgresql://postgres:root@localhost:5433/bookingservice', // without docker
+      url: 'postgresql://postgres:root@localhost:5433/bookingservice', // without docker
       //url: 'postgresql://postgres:root@postgres:5432/bookingservice', // with docker
-      url: 'postgresql://user:password@booking-db-service:5432/bookingservice', // with kunernetes
+      //url: 'postgresql://user:password@booking-db-service:5432/bookingservice', // with kunernetes
       // host: 'localhost',
       // port: 5433,
       // username: 'postgres',

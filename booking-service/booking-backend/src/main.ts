@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { Request, Response } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,18 +10,6 @@ async function bootstrap() {
   app.enableCors();
   app.setGlobalPrefix('booking-api/v1');
   app.useGlobalPipes(new ValidationPipe());
-
-  // Define a middleware to intercept all incoming requests
-  app.use((req: Request, res: Response, next: Function) => {
-    // Check if the request is for the root endpoint
-    if (req.url === '/booking-api') {
-      // If so, send a custom message
-      res.send('PETCARE - Welcome to the Booking API!');
-    } else {
-      // If not, proceed with the next middleware
-      next();
-    }
-  });
 
   const config = new DocumentBuilder()
     .setTitle('Booking API')
@@ -36,7 +23,7 @@ async function bootstrap() {
     ignoreGlobalPrefix: false,
   });
   // const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('booking-api/api', app, document);
+  SwaggerModule.setup('booking-api', app, document);
 
   await app.listen(8040);
 }
