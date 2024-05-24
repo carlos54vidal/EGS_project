@@ -4,3 +4,8 @@ export interface ReadBooking {
   duration: number;
   description?: string;
 }
+
+export interface freeSlot {
+  start: Date;
+  end: Date;
+}

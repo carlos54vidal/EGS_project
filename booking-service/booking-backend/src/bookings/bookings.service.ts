@@ -5,7 +5,7 @@ import { Booking } from './entities/booking.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ClientsService } from 'src/clients/clients.service';
-import { ReadBooking } from './bookings.interface';
+import { ReadBooking, freeSlot } from './bookings.interface';
 import { isISODateString, isOverlapping } from 'utils/bookings-operations';
 
 @Injectable()
@@ -342,15 +342,11 @@ export class BookingsService {
         where: { client: { id: clientId } },
       });
 
-      console.log(start);
-
-      console.log(end);
-
       bookings.map((booking) => {
         const bookingDate = booking.datetime;
-        console.log(bookingDate);
+        //console.log(bookingDate);
         if (bookingDate >= startDate && bookingDate <= endDate) {
-          console.log('Inside');
+          //console.log('Inside');
           clientBookings.push({
             bookingId: booking.id,
             datetime: booking.datetime,
@@ -400,49 +396,64 @@ export class BookingsService {
     }
   }
 
-  async findAllFree(key: string, startDatetime: Date, endDatetime: Date) {
+  async findFreeSlots(key: string, start: string, end: string) {
+    const freeSlots: freeSlot[] = [];
+
     try {
-      let freeSlots: { start: Date; end: Date }[] = [];
-
-      // Identify clientId through api-key
-      const client = await this.clientsService.findOne(key);
-      const clientId = client.id;
-
-      // Get client bookings through his id
-      const clientBookings = await this.bookingRepository.find({
-        where: { client: { id: clientId } },
-        relations: ['client'],
-      });
-
-      // Sort bookings by datetime
-      clientBookings.sort(
-        (a, b) => a.datetime.getTime() - b.datetime.getTime(),
-      );
-
-      // Initialize free slot with start and end of the provided interval
-      let freeSlotStart = startDatetime;
-      let freeSlotEnd = endDatetime;
-
-      // Iterate through bookings to find free slots
-      for (const booking of clientBookings) {
-        const existingStart = booking.datetime;
-        const existingDuration = booking.duration;
-        const existingEnd = new Date(
-          existingStart.getTime() + existingDuration * 1000,
-        );
-
-        // Check if there's a gap before the current booking
-        if (existingStart > freeSlotStart) {
-          freeSlots.push({ start: freeSlotStart, end: existingStart });
-        }
-
-        // Update free slot range
-        freeSlotStart = existingEnd;
+      if (!isISODateString(start) && isISODateString(end)) {
+        return {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: 'The DateTime is not in ISO format.',
+        };
       }
 
-      // Check if there's a gap after the last booking
-      if (freeSlotStart < freeSlotEnd) {
-        freeSlots.push({ start: freeSlotStart, end: freeSlotEnd });
+      // Get all bookings schedule within the range
+      const bookings = await this.findByDatetimeRange(key, start, end);
+      // Ensure bookings is an array before proceeding
+      if (!Array.isArray(bookings)) {
+        console.error('Failed to retrieve bookings.');
+        return [];
+      }
+      // Sort bookings by start datetime
+      bookings.sort((a, b) => a.datetime.getTime() - b.datetime.getTime());
+      //console.log(bookings);
+
+      let startDateTime = new Date(start);
+      let endDateTime = new Date(end);
+      // console.log(startDateTime);
+      // console.log(endDateTime);
+
+      // Iterate through bookings to find free slots
+      for (const booking of bookings) {
+        //console.log('startDateTime: ', startDateTime);
+        const bookingStart = new Date(booking.datetime);
+        const bookingEnd = new Date(
+          bookingStart.getTime() + booking.duration * 1000,
+        );
+        // console.log('Booking Start: ', bookingStart);
+        // console.log('Booking End: ', bookingEnd);
+
+        if (startDateTime < bookingStart) {
+          // Before bookingStart is FREE
+          freeSlots.push({
+            start: new Date(startDateTime),
+            end: bookingStart,
+          });
+        }
+        //console.log(freeSlots);
+
+        // Move current datetime to the end of the current booking
+        if (startDateTime < bookingEnd) {
+          startDateTime = bookingEnd;
+        }
+      }
+
+      // Check for free slots after the last booking
+      if (startDateTime < endDateTime) {
+        freeSlots.push({
+          start: new Date(startDateTime),
+          end: new Date(end),
+        });
       }
 
       return freeSlots;

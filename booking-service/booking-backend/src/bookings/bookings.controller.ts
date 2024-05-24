@@ -96,19 +96,13 @@ export class BookingsController {
 
     if ((month && year) || month || year) {
       // If month and year query parameters are provided, call a service method to fetch bookings for that month
-      console.log('\nFind booking by month and year');
-
       return this.bookingsService.findByMonthAndYear(key, month, year);
     } else if (date) {
       // If date query parameter is provided, call a service method to fetch bookings for that specific date
       return this.bookingsService.findByDate(key, date);
     } else if (start && end) {
       // If start and end datetime query parameters are provided, call a service method to fetch bookings within that datetime range
-      return this.bookingsService.findByDatetimeRange(
-        key,
-        start,
-        end,
-      );
+      return this.bookingsService.findByDatetimeRange(key, start, end);
     } else {
       // Otherwise, return all bookings
       return this.bookingsService.findAll(key);
@@ -149,22 +143,28 @@ export class BookingsController {
 
   @Get('free-slots')
   @UseGuards(AuthGuard('headerapikey'))
-  @ApiOperation({ summary: 'Get all available bookings' })
-  @ApiQuery({
-    name: 'startDateTime',
-    example: '2024-01-01T10:00:00Z',
+  @ApiOperation({
+    summary: 'Get free booking slots',
+    description:
+      'This endpoint allows retrieving free slots based on a start datetime and end datetime.',
   })
   @ApiQuery({
-    name: 'endDateTime',
-    example: '2024-01-01T11:00:00Z',
+    name: 'start',
+    type: 'string',
+    description: 'The start datetime range (ISO 8601 format).',
+  })
+  @ApiQuery({
+    name: 'end',
+    type: 'string',
+    description: 'The end datetime range (ISO 8601 format).',
   })
   findFree(
     @Req() request: Request,
-    @Query('startDateTime') start: Date,
-    @Query('endDateTime') end: Date,
+    @Query('start') start: string,
+    @Query('end') end: string,
   ) {
     const key = this.getApiKey(request);
-    return this.bookingsService.findAllFree(key, start, end);
+    return this.bookingsService.findFreeSlots(key, start, end);
   }
 
   @Get(':bookingId')
