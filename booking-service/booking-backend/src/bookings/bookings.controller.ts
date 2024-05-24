@@ -169,7 +169,11 @@ export class BookingsController {
 
   @Get(':bookingId')
   @UseGuards(AuthGuard('headerapikey'))
-  @ApiOperation({ summary: 'Get a booking by uuid' })
+  @ApiOperation({
+    summary: 'Get a booking by uuid',
+    description:
+      'This endpoint returns a booking information by his booking id.',
+  })
   findOne(@Req() request: Request, @Param('bookingId') id: string) {
     const key = this.getApiKey(request);
     return this.bookingsService.findOne(key, id);
@@ -192,7 +196,10 @@ export class BookingsController {
 
   @Delete(':bookingId')
   @UseGuards(AuthGuard('headerapikey'))
-  @ApiOperation({ summary: 'Remove a booking by uuid' })
+  @ApiOperation({
+    summary: 'Remove a booking by uuid',
+    description: 'This endpoint removes a booking by his booking id.',
+  })
   remove(@Req() request: Request, @Param('bookingId') id: string) {
     const key = this.getApiKey(request);
     return this.bookingsService.remove(key, id);

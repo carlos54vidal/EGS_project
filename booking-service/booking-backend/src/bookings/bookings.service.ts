@@ -365,37 +365,6 @@ export class BookingsService {
     }
   }
 
-  async findOne(key: string, bookingId: string) {
-    try {
-      const isBookingExists = await this.bookingRepository.find({
-        where: { id: bookingId },
-      });
-
-      if (isBookingExists) {
-        // Get the booking information
-        const booking = await this.bookingRepository.findOne({
-          where: { id: bookingId },
-          relations: ['client'],
-        });
-        return {
-          datetime: booking.datetime,
-          duration: booking.duration,
-          description: booking.description,
-        };
-      } else {
-        return {
-          statusCode: HttpStatus.NOT_FOUND,
-          message: 'Sorry, booking requested doesnt exist.',
-        };
-      }
-    } catch (error) {
-      return {
-        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: 'Sorry, something went wrong',
-      };
-    }
-  }
-
   async findFreeSlots(key: string, start: string, end: string) {
     const freeSlots: freeSlot[] = [];
 
@@ -465,6 +434,37 @@ export class BookingsService {
     }
   }
 
+  async findOne(key: string, bookingId: string) {
+    try {
+      const isBookingExists = await this.bookingRepository.find({
+        where: { id: bookingId },
+      });
+
+      if (isBookingExists.length !== 0) {
+        // Get the booking information
+        const booking = await this.bookingRepository.findOne({
+          where: { id: bookingId },
+          relations: ['client'],
+        });
+        return {
+          datetime: booking.datetime,
+          duration: booking.duration,
+          description: booking.description,
+        };
+      } else {
+        return {
+          statusCode: HttpStatus.NOT_FOUND,
+          message: 'Sorry, booking requested doesnt exist.',
+        };
+      }
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Sorry, something went wrong',
+      };
+    }
+  }
+
   async update(
     key: string,
     bookingId: string,
@@ -472,19 +472,26 @@ export class BookingsService {
   ) {
     // Update booking values
     try {
-      // Check if booking with bookingId exists
-
-      // Check if api-key is the one
-
-      await this.bookingRepository.update(bookingId, {
-        datetime,
-        duration,
-        description,
+      const isBookingExists = await this.bookingRepository.find({
+        where: { id: bookingId },
       });
-      return {
-        statusCode: HttpStatus.OK,
-        message: 'Booking updated !',
-      };
+
+      if (isBookingExists.length !== 0) {
+        await this.bookingRepository.update(bookingId, {
+          datetime,
+          duration,
+          description,
+        });
+        return {
+          statusCode: HttpStatus.OK,
+          message: 'Booking updated !',
+        };
+      } else {
+        return {
+          statusCode: HttpStatus.NOT_FOUND,
+          message: 'Sorry, booking id requested doesnt exist.',
+        };
+      }
     } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -494,17 +501,28 @@ export class BookingsService {
   }
 
   async remove(key: string, bookingId: string) {
+    console.log('Remove booking \n');
+
+    console.log(bookingId);
     try {
-      // Check if booking with bookingId exists
+      const isBookingExists = await this.bookingRepository.find({
+        where: { id: bookingId },
+      });
 
-      // Check if api-key is the one
-
-      await this.bookingRepository.delete(bookingId); // delete a dispenser from the database
-      return {
-        statusCode: HttpStatus.OK,
-        message: 'Booking deleted !',
-      };
+      if (isBookingExists.length !== 0) {
+        await this.bookingRepository.delete(bookingId);
+        return {
+          statusCode: HttpStatus.OK,
+          message: 'Booking deleted !',
+        };
+      } else {
+        return {
+          statusCode: HttpStatus.NOT_FOUND,
+          message: 'Sorry, booking id requested doesnt exist.',
+        };
+      }
     } catch (error) {
+      console.log(error);
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         message: 'Sorry, something went wrong',
