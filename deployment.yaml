@@ -294,7 +294,7 @@ metadata:
     traefik.ingress.kubernetes.io/redirect-permanent: "true"
 spec:
   rules:
-  - host: petcare.deti
+  - host: grupo2-egs-deti.ua.pt
     http:
       paths:
       - path: /
