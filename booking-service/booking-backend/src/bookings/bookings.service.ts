@@ -477,14 +477,65 @@ export class BookingsService {
       });
 
       if (isBookingExists.length !== 0) {
-        await this.bookingRepository.update(bookingId, {
-          datetime,
-          duration,
-          description,
+        // Check for overlaps before updating
+
+        /** Get all client bookings by his api-key and check
+         * if a booking already exists at the specified datetime */
+        const client = await this.clientsService.findOne(key);
+        const clientId = client.id;
+        let isBookingExists = await this.bookingRepository.find({
+          relations: ['client'],
+          where: { client: { id: clientId }, datetime: datetime },
         });
+
+        // Remove the booking that we dont want anymore
+        isBookingExists = isBookingExists.filter((obj) => obj.id !== bookingId);
+
+        if (isBookingExists.length === 0) {
+          // Check if there is overlapping with other bookings
+          let overlappingExists: boolean = false;
+          let bookings = await this.bookingRepository.find({
+            relations: ['client'],
+            where: { client: { id: clientId } },
+          });
+
+          // Remove the booking that we dont want anymore
+          bookings = bookings.filter((obj) => obj.id !== bookingId);
+
+          bookings.forEach((existingBooking) => {
+            if (
+              isOverlapping(existingBooking, {
+                datetime: datetime,
+                duration: duration,
+              })
+            ) {
+              overlappingExists = true; // Overlapping booking found
+              return; // Exit from forEach loop early
+            }
+          });
+
+          if (!overlappingExists) {
+            await this.bookingRepository.update(bookingId, {
+              datetime,
+              duration,
+              description,
+            });
+          } else {
+            return {
+              statusCode: HttpStatus.CONFLICT,
+              message: 'Booking failed. There is a scheduling conflict.',
+            };
+          }
+        } else {
+          return {
+            statusCode: HttpStatus.CONFLICT,
+            message: 'Sorry, booking already exists at this datetime.',
+          };
+        }
+
         return {
           statusCode: HttpStatus.OK,
-          message: 'Booking updated !',
+          message: 'Booking updated successfully!',
         };
       } else {
         return {
@@ -501,9 +552,6 @@ export class BookingsService {
   }
 
   async remove(key: string, bookingId: string) {
-    console.log('Remove booking \n');
-
-    console.log(bookingId);
     try {
       const isBookingExists = await this.bookingRepository.find({
         where: { id: bookingId },

@@ -26,23 +26,35 @@ export class ClientsController {
     return this.clientsService.create(data);
   }
 
+  @ApiOperation({
+    summary: 'Get all the clients from the bookings service.',
+  })
   @Get()
   findAll() {
     return this.clientsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  @ApiOperation({
+    summary: 'Get a client from the bookings service by client id.',
+  })
+  @Get(':clientId')
+  findOne(@Param('clientId') id: string) {
     return this.clientsService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() data: UpdateClientDto) {
+  @ApiOperation({
+    summary: 'Update a client from the bookings service by client id.',
+  })
+  @Patch(':clientId')
+  update(@Param('clientId') id: string, @Body() data: UpdateClientDto) {
     return this.clientsService.update(id, data);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
+  @ApiOperation({
+    summary: 'Remove a client from the bookings service by client id.',
+  })
+  @Delete(':clientId')
+  remove(@Param('clientId') id: string) {
     return this.clientsService.remove(id);
   }
 }

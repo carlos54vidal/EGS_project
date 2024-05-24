@@ -18,9 +18,6 @@ export class ClientsService {
     const apikey = generateApiKey();
 
     try {
-      // Check if name exists
-      // ...
-
       const client = this.clientRepository.create({ name, apikey });
       await this.clientRepository.save(client);
 
@@ -48,8 +45,18 @@ export class ClientsService {
   async findOne(id: string): Promise<any> {
     // Find Client
     try {
-      const client = await this.clientRepository.findOneBy({ apikey: id });
-      return client;
+      const isClientExists = await this.clientRepository.find({
+        where: { id: id },
+      });
+
+      if (isClientExists.length !== 0) {
+        return isClientExists;
+      } else {
+        return {
+          statusCode: HttpStatus.NOT_FOUND,
+          message: 'Sorry, client id requested doesnt exist.',
+        };
+      }
     } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -60,11 +67,22 @@ export class ClientsService {
 
   async update(id: string, data: UpdateClientDto) {
     try {
-      await this.clientRepository.update(id, data);
-      return {
-        statusCode: HttpStatus.OK,
-        message: 'Client updated !',
-      };
+      const isClientExists = await this.clientRepository.find({
+        where: { id: id },
+      });
+
+      if (isClientExists.length !== 0) {
+        await this.clientRepository.update(id, data);
+        return {
+          statusCode: HttpStatus.OK,
+          message: 'Client updated!',
+        };
+      } else {
+        return {
+          statusCode: HttpStatus.NOT_FOUND,
+          message: 'Sorry, client id requested doesnt exist.',
+        };
+      }
     } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -75,11 +93,22 @@ export class ClientsService {
 
   async remove(id: string) {
     try {
-      await this.clientRepository.delete(id);
-      return {
-        statusCode: HttpStatus.OK,
-        message: 'Client deleted !',
-      };
+      const isClientExists = await this.clientRepository.find({
+        where: { id: id },
+      });
+
+      if (isClientExists.length !== 0) {
+        await this.clientRepository.delete(id);
+        return {
+          statusCode: HttpStatus.OK,
+          message: 'Client deleted!',
+        };
+      } else {
+        return {
+          statusCode: HttpStatus.NOT_FOUND,
+          message: 'Sorry, client id requested doesnt exist.',
+        };
+      }
     } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
