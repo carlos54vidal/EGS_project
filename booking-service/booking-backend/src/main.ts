@@ -18,7 +18,9 @@ async function bootstrap() {
   // Swagger configuration for Bookings API
   const bookingConfig = new DocumentBuilder()
     .setTitle('Booking API')
-    .setDescription('The bookings API description')
+    .setDescription(
+      'The booking API allows users to manage all the bookings for a given client using their api-key.',
+    )
     .setVersion('1.0')
     .addApiKey({ type: 'apiKey', name: 'Api-Key', in: 'header' }, 'Api-Key')
     .build();
@@ -31,7 +33,9 @@ async function bootstrap() {
   // Swagger configuration for Clients API
   const clientConfig = new DocumentBuilder()
     .setTitle('Clients API')
-    .setDescription('The clients API description')
+    .setDescription(
+      'The clients API allows managing all clients using the bookings service.',
+    )
     .setVersion('1.0')
     .build();
 
@@ -39,20 +43,6 @@ async function bootstrap() {
     include: [ClientsModule],
   });
   SwaggerModule.setup('booking-service/clients', app, clientDocument);
-
-  // const config = new DocumentBuilder()
-  //   .setTitle('Booking API')
-  //   .setDescription('The bookings API description')
-  //   .setVersion('1.0')
-  //   .addApiKey({ type: 'apiKey', name: 'Api-Key', in: 'header' }, 'Api-Key')
-  //   //.addTag('bookings')
-  //   .build();
-
-  // const document = SwaggerModule.createDocument(app, config, {
-  //   ignoreGlobalPrefix: false,
-  // });
-  // // const document = SwaggerModule.createDocument(app, config);
-  // SwaggerModule.setup('booking-api', app, document);
 
   await app.listen(8040);
 }

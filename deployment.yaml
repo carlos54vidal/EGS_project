@@ -3,7 +3,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: booking-api
+  name: booking-api 
   namespace: egs-petcare
 spec:
   replicas: 1
@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: booking-api
-        image: registry.deti/egs-petcare/booking-api:v7
+        image: registry.deti/egs-petcare/booking-api:v8
         resources:
           requests:
             memory: "500Mi"
@@ -332,7 +332,7 @@ data:
 
             server_name _;
 
-            location /booking-api {
+            location /booking-service {
                 proxy_pass http://booking-api-service:8040;
                 proxy_set_header Host $host;
                 proxy_set_header X-Real-IP $remote_addr;
