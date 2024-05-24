@@ -13,7 +13,7 @@ class PaymentsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Payments
-        fields = ('id', 'client_unique_key', 'name', 'amount', 'paid', 'created_at', 'updated_at')
+        fields = ('id', 'client_unique_key', 'name', 'amount', 'description', 'paid', 'created_at', 'updated_at')
 
 
 class PaymentsCreateUpdateSerializer(serializers.ModelSerializer):

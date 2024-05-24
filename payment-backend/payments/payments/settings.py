@@ -52,7 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'payment_api.middleware.middleware.PaymentsMiddleware',
+    #'payment_api.middleware.middleware.PaymentsMiddleware',
 ]
 
 ROOT_URLCONF = 'payments.urls'
@@ -92,7 +92,7 @@ DATABASES = {
         'NAME': 'paymentsdb',
         'USER': 'postgres',
         'PASSWORD': 'admin',
-        'HOST': 'payments-db-service',
+        'HOST': 'localhost',#'payments-db-service',
         'PORT': '5432',
     }
 }
