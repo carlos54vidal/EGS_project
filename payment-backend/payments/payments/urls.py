@@ -43,7 +43,8 @@ urlpatterns = [
 
     # URL pattern for the form
     path('v1/registration/', ClientsViewSet.as_view({'post': 'create', 'get': 'list'}), name='registration'),
-    path('send_post_request/', SendPostRequestViewSet.as_view({'post': 'create', 'get': 'list'}), name='send_post_request'),
+    # path('send_post_request/', SendPostRequestViewSet.as_view({'post': 'create', 'get': 'list'}), name='send_post_request'),
+    # path('send-post-request/', views.SendPostRequestView.as_view(), name='send_post_request'),
 
     path('v1/payment_complete/', PaymentCompleteAPIView.as_view(), name='payment_complete'),
 ]
