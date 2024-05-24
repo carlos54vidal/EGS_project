@@ -16,6 +16,20 @@ class PaymentsSerializer(serializers.ModelSerializer):
         fields = ('id', 'client_unique_key', 'name', 'amount', 'description', 'paid', 'created_at', 'updated_at')
 
 
+class PaymentsPostSerializer(serializers.Serializer):
+    amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+    description = serializers.CharField(max_length=100)
+    phone = serializers.CharField(max_length=20)
+
+    def validate(self, data):
+        """
+        Check that the amount is positive.
+        """
+        if data['amount'] <= 0:
+            raise serializers.ValidationError("Amount must be positive")
+        return data
+    
+
 class PaymentsCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payments

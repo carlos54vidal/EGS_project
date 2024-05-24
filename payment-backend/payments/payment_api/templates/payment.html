@@ -29,8 +29,7 @@
 <body>
 	<div class="container">
 		<div class="row">
-			<div class="col-lg">
-				
+			<div class="col-lg">				
 			</div>
 			<div class="col-lg">
 				<br>
@@ -41,7 +40,7 @@
 					<hr>
 					<div id="paypal-button-container"></div>
 					<!-- Add the MB Way button here -->
-                    <button type="button" onclick="redirectToMBWay('{{ payments.amount }}')" class="btn btn-dark mt-3 custom-btn">
+                    <button type="button" onclick="redirectToMBWay('{{ payments.amount }}', 'Petcare')" class="btn btn-dark mt-3 custom-btn">
 						Pay with&nbsp;
 						<img src="{% static 'images\mb-way.png' %}" alt=" MB Way">
 					</button>
@@ -52,8 +51,8 @@
 		</div>
 	</div>
 	<script>
-		function redirectToMBWay(amount) {
-			window.location.href = `/v1/mb-way/?amount=${amount}`;
+		function redirectToMBWay(amount, description) {
+			window.location.href = `/v1/mb-way/?amount=${amount}&description=${encodeURIComponent(description)}`;
 		}
 	</script>
 	<script src="https://www.paypalobjects.com/api/checkout.js"></script>

@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.exceptions import MethodNotAllowed
 from django.http import JsonResponse
 from django.views import View
-from .serializers import PaymentsSerializer, PaymentRequestSerializer, PaymentsListSerializer, PaymentsCreateUpdateSerializer, PaymentCompleteSerializer, ClientsSerializer
+from .serializers import PaymentsSerializer, PaymentsPostSerializer, PaymentsListSerializer, PaymentsCreateUpdateSerializer, PaymentCompleteSerializer, ClientsSerializer
 import requests
 #from django.views import View
 
@@ -167,16 +167,18 @@ def process_payment(request, client_secret):
 
 class SendPostRequestViewSet(viewsets.ViewSet):
     queryset = Payments.objects.all()
-    serializer_class = PaymentsSerializer
+    serializer_class = PaymentsPostSerializer
 
     def list(self, request):
         return render(request, 'mb-way.html')
 
     def create(self, request):
-        serializer = self.serializer_class(data=request.data)
+        serializer = PaymentsPostSerializer(data=request.data)
         if serializer.is_valid():
             amount = serializer.validated_data['amount']
             description = serializer.validated_data['description']
+            phone_value = serializer.validated_data['phone']
+
             current_datetime = datetime.datetime.now().isoformat()
             payload = {
                 "merchant": {
