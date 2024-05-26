@@ -37,14 +37,14 @@ urlpatterns = [
     path('docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     # Redoc UI:
     path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
-    path('v1/checkout/<uuid:pk>/', views.payment_pid, name='payment_pid'),
-    path('v1/payment/<uuid:cid>/<uuid:pid>/', views.payment, name='payment'),
+    path('checkout/<uuid:pk>/', views.payment_pid, name='payment_pid'),
+    path('payment/<uuid:cid>/<uuid:pid>/', views.payment, name='payment'),
     # path('process_payment/<str:client_secret>/', views.process_payment, name='process_payment'),
 
     # URL pattern for the form
-    path('v1/registration/', ClientsViewSet.as_view({'post': 'create', 'get': 'list'}), name='registration'),
+    path('registration/', ClientsViewSet.as_view({'post': 'create', 'get': 'list'}), name='registration'),
     # path('send_post_request/', SendPostRequestViewSet.as_view({'post': 'create', 'get': 'list'}), name='send_post_request'),
     # path('send-post-request/', views.SendPostRequestView.as_view(), name='send_post_request'),
 
-    path('v1/payment_complete/', PaymentCompleteAPIView.as_view(), name='payment_complete'),
+    path('payment_complete/', PaymentCompleteAPIView.as_view(), name='payment_complete'),
 ]
