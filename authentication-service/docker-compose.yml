@@ -1,11 +1,11 @@
 services:
-  payments-db-service:
+  auth-db-service:
     image: postgres:latest
-    container_name: payments-db
+    container_name: auth-db
     volumes:
-      - /payments:/var/lib/postgresql/data
+      - /authentication:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: paymentsdb
+      POSTGRES_DB: authdb
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin
     ports:
@@ -14,10 +14,10 @@ services:
     networks:
       - backend
 
-  payments:
+  authentication:
     build: .
-    image: payments:v1
-    container_name: web-payments
+    image: authentication:v1
+    container_name: web-auth
     environment:
       - DJANGO_SUPERUSER_USERNAME=admin
       - DJANGO_SUPERUSER_EMAIL=admin@example.com
@@ -27,11 +27,11 @@ services:
             python manage.py loaddata datadump.json &&
             python manage.py runserver 0.0.0.0:8080"
     volumes:
-      - .:/payments # Mount Django project directory
+      - .:/authentication # Mount Django project directory
     ports:
       - "8080:8080"
     depends_on:
-      - payments-db-service
+      - auth-db-service
     #network_mode: "host"
     networks:
       - backend
