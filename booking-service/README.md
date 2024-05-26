@@ -1,23 +1,3 @@
-## Booking Frontend
-
-### Dependencies
-
-```bash
-$ npm i axios
-```
-
-### Running the app
-
-```bash
-$ npm run dev
-```
-
-### Access the client register to create api-key
-```bash
-# url
-http://localhost:3000
-```
-
 ## Booking Backend
 
 ### Dependencies
