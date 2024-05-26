@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: booking-api
-        image: registry.deti/egs-petcare/booking-api:v12
+        image: registry.deti/egs-petcare/booking-api:v13
         resources:
           requests:
             memory: "500Mi"
@@ -356,7 +356,7 @@ data:
                 proxy_set_header X-Forwarded-Proto $scheme;
              }
 
-            location /payments {
+            location /v1/payments {
                 proxy_pass http://payments-service:8080;
                 proxy_set_header Host $host;
                 proxy_set_header X-Real-IP $remote_addr;

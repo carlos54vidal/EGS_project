@@ -21,7 +21,7 @@ export class ClientsService {
       const client = this.clientRepository.create({ name, apikey });
       await this.clientRepository.save(client);
 
-      return { statusCode: HttpStatus.CREATED, message: 'Client created' };
+      return { apikey: apikey };
     } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
