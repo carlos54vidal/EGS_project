@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: booking-api
-        image: registry.deti/egs-petcare/booking-api:v9
+        image: registry.deti/egs-petcare/booking-api:v12
         resources:
           requests:
             memory: "500Mi"
@@ -57,7 +57,7 @@ spec:
     spec:
       containers:
       - name: booking-db
-        image: postgres:latest
+        image: postgres:16
         env:  # environment variables 
         - name: POSTGRES_DB  
           value: "bookingservice"
@@ -333,6 +333,22 @@ data:
             server_name _;
 
             location /booking-service {
+                proxy_pass http://booking-api-service:8040;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+             }
+
+            location /bookings {
+                proxy_pass http://booking-api-service:8040;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+             }
+
+            location /clients {
                 proxy_pass http://booking-api-service:8040;
                 proxy_set_header Host $host;
                 proxy_set_header X-Real-IP $remote_addr;

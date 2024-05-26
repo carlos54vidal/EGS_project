@@ -12,10 +12,13 @@ export class AuthService {
     // console.log('apiKey: ' + apiKey);
     // console.log('Auth - Validating api-key...');
 
-    const clientExists = await this.clientsService.findOne(apiKey);
+    const clientExists = await this.clientsService.findByKey(apiKey);
+    //console.log('Auth Service !!!!');
     //console.log(clientExists);
-    if (clientExists) {
-      //console.log('Valid !! ');
+    let status404 = clientExists.statusCode === 404;
+    //console.log(status404);
+    if (!status404) {
+      console.log('Valid !! ');
       return true;
     }
 

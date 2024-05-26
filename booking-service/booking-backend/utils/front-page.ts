@@ -152,7 +152,7 @@ export const frontPage = `
 
             const name = document.getElementById('cname').value;
 
-            fetch('http://localhost:8040/v1/booking-service/clients', {
+            fetch('http://grupo2-egs-deti.ua.pt/clients', {
                 method: 'POST',
                 headers: {
                     'Accept': '*/*',

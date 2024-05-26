@@ -43,6 +43,14 @@ export class ClientsController {
   }
 
   @ApiOperation({
+    summary: 'Get a client by api-key.',
+  })
+  @Get('/client/:apiKey')
+  findByKey(@Param('apiKey') apiKey: string) {
+    return this.clientsService.findByKey(apiKey);
+  }
+
+  @ApiOperation({
     summary: 'Update a client from the bookings service by client id.',
   })
   @Patch(':clientId')

@@ -19,25 +19,33 @@ export class BookingsService {
   async create(key: string, data: CreateBookingDto) {
     const { bookingId, datetime, duration, description } = data;
 
+    console.log('\nkey: ', key);
+
+    console.log('bookingId: ', bookingId);
+    console.log('datetime: ', datetime);
+    console.log('duration: ', duration);
+    console.log('description: ', description);
+
     try {
       if (!bookingId) {
         // Booking id is not given as parameter
+        console.log('\nBooking Id isnt given !');
 
         /** Get all client bookings by his api-key and check
          * if a booking already exists at the specified datetime */
-        const client = await this.clientsService.findOne(key);
-        const clientId = client.id;
         const isBookingExists = await this.bookingRepository.find({
           relations: ['client'],
-          where: { client: { id: clientId }, datetime: datetime },
+          where: { client: { apikey: key }, datetime: datetime },
         });
 
-        if (isBookingExists.length === 0) {
+        console.log(isBookingExists);
+
+        if (isBookingExists.length == 0) {
           // Check if there is overlapping with other bookings
           let overlappingExists: boolean = false;
           const bookings = await this.bookingRepository.find({
             relations: ['client'],
-            where: { client: { id: clientId } },
+            where: { client: { apikey: key } },
           });
 
           bookings.forEach((existingBooking) => {
@@ -53,6 +61,7 @@ export class BookingsService {
           });
 
           if (!overlappingExists) {
+            const client = await this.clientsService.findByKey(key);
             const booking = this.bookingRepository.create({
               datetime,
               duration,
@@ -84,22 +93,20 @@ export class BookingsService {
           where: { id: bookingId },
         });
 
-        if (!isBookingIdExists) {
+        if (isBookingIdExists.length == 0) {
           /** Get all client bookings by his api-key and check
            * if a booking already exists at the specified datetime */
-          const client = await this.clientsService.findOne(key);
-          const clientId = client.id;
           const isBookingExists = await this.bookingRepository.find({
             relations: ['client'],
-            where: { client: { id: clientId }, datetime: datetime },
+            where: { client: { apikey: key }, datetime: datetime },
           });
 
-          if (isBookingExists.length === 0) {
+          if (isBookingExists.length == 0) {
             // Check if there is overlapping with other bookings
             let overlappingExists: boolean = false;
             const bookings = await this.bookingRepository.find({
               relations: ['client'],
-              where: { client: { id: clientId } },
+              where: { client: { apikey: key } },
             });
 
             bookings.forEach((existingBooking) => {
@@ -115,6 +122,7 @@ export class BookingsService {
             });
 
             if (!overlappingExists) {
+              const client = await this.clientsService.findByKey(key);
               const booking = this.bookingRepository.create({
                 datetime,
                 duration,
@@ -146,6 +154,7 @@ export class BookingsService {
         }
       }
     } catch (error) {
+      console.log(error);
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         message: 'Sorry, something went wrong',
@@ -158,14 +167,10 @@ export class BookingsService {
     datetime: Date,
     duration: number,
   ): Promise<boolean> {
-    // Identify clientId through api-key
-    const client = await this.clientsService.findOne(key);
-    const clientId = client.id;
-
-    // Get all the bookings of the client through is id
+    // Get all the bookings of the client - Identify clientId through api-key
     const bookings = await this.bookingRepository.find({
       relations: ['client'],
-      where: { client: { id: clientId } },
+      where: { client: { apikey: key } },
     });
 
     let overlappingExists: boolean = false;
@@ -187,15 +192,12 @@ export class BookingsService {
 
   async findAll(key: string) {
     const clientBookings: ReadBooking[] = [];
-    try {
-      // Identify clientId through api-key
-      const client = await this.clientsService.findOne(key);
-      const clientId = client.id;
 
-      // Get all the bookings of the client through is id
+    try {
+      // Get all the bookings of the client - Identify clientId through api-key
       const bookings = await this.bookingRepository.find({
         relations: ['client'],
-        where: { client: { id: clientId } },
+        where: { client: { apikey: key } },
       });
 
       bookings.map((booking) => {
@@ -219,23 +221,15 @@ export class BookingsService {
   async findByMonthAndYear(key: string, month: number, year: number) {
     const clientBookings: ReadBooking[] = [];
 
-    console.log('month:', month);
-
-    console.log('year:', year);
-
     try {
       // Identify clientId through api-key
-      const client = await this.clientsService.findOne(key);
-      const clientId = client.id;
-
-      // Get all the bookings of the client through is id
       const bookings = await this.bookingRepository.find({
         relations: ['client'],
-        where: { client: { id: clientId } },
+        where: { client: { apikey: key } },
       });
 
       if (month && year) {
-        //console.log('Month and year');
+        console.log('Month and year');
         bookings.map((booking) => {
           const bookingDateYear = booking.datetime.getFullYear();
           const bookingDateMonth = booking.datetime.getMonth() + 1;
@@ -249,7 +243,7 @@ export class BookingsService {
           }
         });
       } else if (month) {
-        //console.log('Month');
+        console.log('Month');
         bookings.map((booking) => {
           const bookingDateMonth = booking.datetime.getMonth() + 1;
           if (bookingDateMonth == month) {
@@ -262,7 +256,7 @@ export class BookingsService {
           }
         });
       } else if (year) {
-        //console.log('year');
+        console.log('year');
         bookings.map((booking) => {
           const bookingDateYear = booking.datetime.getFullYear();
           if (bookingDateYear == year) {
@@ -288,14 +282,10 @@ export class BookingsService {
   async findByDate(key: string, date: string) {
     const clientBookings: ReadBooking[] = [];
     try {
-      // Identify clientId through api-key
-      const client = await this.clientsService.findOne(key);
-      const clientId = client.id;
-
-      // Get all the bookings of the client through is id
+      // Get all the bookings of the client through is apikey
       const bookings = await this.bookingRepository.find({
         relations: ['client'],
-        where: { client: { id: clientId } },
+        where: { client: { apikey: key } },
       });
 
       bookings.map((booking) => {
@@ -332,14 +322,10 @@ export class BookingsService {
       const startDate = new Date(start);
       const endDate = new Date(end);
 
-      // Identify clientId through api-key
-      const client = await this.clientsService.findOne(key);
-      const clientId = client.id;
-
-      // Get all the bookings of the client through is id
+      // Get all the bookings of the client through is apikey
       const bookings = await this.bookingRepository.find({
         relations: ['client'],
-        where: { client: { id: clientId } },
+        where: { client: { apikey: key } },
       });
 
       bookings.map((booking) => {
@@ -481,11 +467,9 @@ export class BookingsService {
 
         /** Get all client bookings by his api-key and check
          * if a booking already exists at the specified datetime */
-        const client = await this.clientsService.findOne(key);
-        const clientId = client.id;
         let isBookingExists = await this.bookingRepository.find({
           relations: ['client'],
-          where: { client: { id: clientId }, datetime: datetime },
+          where: { client: { apikey: key }, datetime: datetime },
         });
 
         // Remove the booking that we dont want anymore
@@ -496,7 +480,7 @@ export class BookingsService {
           let overlappingExists: boolean = false;
           let bookings = await this.bookingRepository.find({
             relations: ['client'],
-            where: { client: { id: clientId } },
+            where: { client: { apikey: key } },
           });
 
           // Remove the booking that we dont want anymore

@@ -12,7 +12,7 @@ async function bootstrap() {
 
   // enable cors and global prefix for apis
   app.enableCors();
-  app.setGlobalPrefix('v1/booking-service'); // This global prefix will apply to all routes
+  //app.setGlobalPrefix('booking-service'); // This global prefix will apply to all routes
 
   // Global validation pipe
   app.useGlobalPipes(new ValidationPipe());

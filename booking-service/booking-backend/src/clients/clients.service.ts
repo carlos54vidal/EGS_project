@@ -65,6 +65,29 @@ export class ClientsService {
     }
   }
 
+  async findByKey(apiKey: string): Promise<any> {
+    // Find Client
+    try {
+      const isClientExists = await this.clientRepository.findOne({
+        where: { apikey: apiKey },
+      });
+
+      if (isClientExists) {
+        return isClientExists;
+      } else {
+        return {
+          statusCode: HttpStatus.NOT_FOUND,
+          message: 'Sorry, apikey requested doesnt exist.',
+        };
+      }
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Sorry, something went wrong',
+      };
+    }
+  }
+
   async update(id: string, data: UpdateClientDto) {
     try {
       const isClientExists = await this.clientRepository.find({
@@ -98,11 +121,26 @@ export class ClientsService {
       });
 
       if (isClientExists.length !== 0) {
-        await this.clientRepository.delete(id);
-        return {
-          statusCode: HttpStatus.OK,
-          message: 'Client deleted!',
-        };
+        // check if there inst any bookings from this id
+        const isBookingExists = await this.clientRepository.find({
+          relations: ['booking'],
+          where: { id: id },
+        });
+
+        const bookingFound = isBookingExists[0].booking.length !== 0;
+
+        if (bookingFound) {
+          return {
+            statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: 'Sorry, this client has bookings.',
+          };
+        } else {
+          await this.clientRepository.delete(id);
+          return {
+            statusCode: HttpStatus.OK,
+            message: 'Client deleted!',
+          };
+        }
       } else {
         return {
           statusCode: HttpStatus.NOT_FOUND,
@@ -110,6 +148,7 @@ export class ClientsService {
         };
       }
     } catch (error) {
+      console.log(error);
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         message: 'Sorry, something went wrong',
