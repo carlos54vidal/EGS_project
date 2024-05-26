@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: booking-api
-        image: registry.deti/egs-petcare/booking-api:v8
+        image: registry.deti/egs-petcare/booking-api:v9
         resources:
           requests:
             memory: "500Mi"

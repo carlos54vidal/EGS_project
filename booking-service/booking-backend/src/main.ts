@@ -4,6 +4,8 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { BookingsModule } from './bookings/bookings.module';
 import { ClientsModule } from './clients/clients.module';
+import { Request, Response } from 'express';
+import { frontPage } from 'utils/front-page';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,6 +16,19 @@ async function bootstrap() {
 
   // Global validation pipe
   app.useGlobalPipes(new ValidationPipe());
+
+  // Define a middleware to intercept all incoming requests
+  app.use((req: Request, res: Response, next: Function) => {
+    // Check if the request is for the root endpoint
+    if (req.url === '/booking-service') {
+      // If so, send a custom message
+      //res.send('PETCARE - Welcome to the Booking API!');
+      res.send(frontPage); // Send the imported HTML content
+    } else {
+      // If not, proceed with the next middleware
+      next();
+    }
+  });
 
   // Swagger configuration for Bookings API
   const bookingConfig = new DocumentBuilder()
