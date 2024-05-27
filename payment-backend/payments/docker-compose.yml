@@ -8,11 +8,14 @@ services:
       POSTGRES_DB: paymentsdb
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin
+    expose:
+      - "5433" # Publishes 5433 to other containers but NOT to host machine
     ports:
-      - "5432:5432"
+      - "5433:5433"
     #network_mode: "host"
     networks:
       - backend
+    command: -p 5433
 
   payments:
     build: .
