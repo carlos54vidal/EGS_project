@@ -100,7 +100,7 @@ spec:
     spec:
       containers:
       - name: payments
-        image: registry.deti/egs-petcare/payments:v2
+        image: registry.deti/egs-petcare/payments:v1
         resources:
           requests:
             memory: "500Mi"
@@ -356,7 +356,7 @@ data:
                 proxy_set_header X-Forwarded-Proto $scheme;
              }
 
-            location /v1/payments {
+            location /payments {
                 proxy_pass http://payments-service:8080;
                 proxy_set_header Host $host;
                 proxy_set_header X-Real-IP $remote_addr;
