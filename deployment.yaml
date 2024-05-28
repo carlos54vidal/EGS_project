@@ -265,13 +265,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx
+  name: nginx-service
   namespace: egs-petcare
 spec:
-  type: ClusterIP
   ports:
-    name: http
-    port: 80
+  - port: 80
+    targetPort: 80
   selector:
     app: nginx
 
@@ -296,7 +295,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: nginx
+            name: nginx-service
             port: 
               number: 80
 
@@ -401,6 +400,14 @@ data:
              }
 
              location /docs {
+                proxy_pass http://payments-service:8081;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+             }
+
+             location / {
                 proxy_pass http://payments-service:8081;
                 proxy_set_header Host $host;
                 proxy_set_header X-Real-IP $remote_addr;
