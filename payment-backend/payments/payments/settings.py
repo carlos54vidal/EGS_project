@@ -93,7 +93,7 @@ DATABASES = {
         'USER': 'postgres',
         'PASSWORD': 'admin',
         'HOST': 'payments-db-service',
-        'PORT': '5433',
+        'PORT': '5432', 
     }
 }
 

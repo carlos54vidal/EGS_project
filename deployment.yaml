@@ -74,7 +74,50 @@ spec:
       - name: booking-storage
         persistentVolumeClaim:
           claimName: booking-pvc
-        
+
+# Create payments-db deployment
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paymentsdb
+  namespace: egs-petcare
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: paymentsdb
+  template:
+    metadata:
+      labels:
+        app: paymentsdb
+    spec:
+      containers:
+      - name: paymentsdb
+        image: postgres:16
+        env:  # environment variables 
+        - name: POSTGRES_DB  
+          value: "paymentsdb"
+        - name: POSTGRES_USER
+          value: "postgres"
+        - name: POSTGRES_PASSWORD
+          value: "admin"
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "10m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: payments-storage
+          mountPath: /var/lib/postgresql/payments_data
+      volumes:
+      - name: payments-storage
+        emptyDir: {}
+  
 # Create payments-api deployment
 ---
 apiVersion: apps/v1
@@ -94,7 +137,7 @@ spec:
     spec:
       containers:
       - name: payments
-        image: registry.deti/egs-petcare/payments:v1
+        image: registry.deti/egs-petcare/payments:v3
         resources:
           requests:
             memory: "500Mi"
@@ -121,49 +164,6 @@ spec:
           value: admin@example.com
         - name: DJANGO_SUPERUSER_PASSWORD
           value: admin
-  
-# Create payments-db deployment
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: paymentsdb
-  namespace: egs-petcare
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: paymentsdb
-  template:
-    metadata:
-      labels:
-        app: paymentsdb
-    spec:
-      containers:
-      - name: paymentsdb
-        image: postgres:latest
-        env:  # environment variables 
-        - name: POSTGRES_DB  
-          value: "paymentsdb"
-        - name: POSTGRES_USER
-          value: "postgres"
-        - name: POSTGRES_PASSWORD
-          value: "admin"
-        resources:
-          requests:
-            memory: "32Mi"
-            cpu: "10m"
-          limits:
-            memory: "128Mi"
-            cpu: "500m"
-        ports:
-        - containerPort: 5432
-        volumeMounts:
-        - name: db-data
-          mountPath: /var/lib/postgresql/payments_data
-      volumes:
-      - name: db-data
-        emptyDir: {}
 
 # Create nginx deployment
 ---
@@ -241,8 +241,7 @@ metadata:
   namespace: egs-petcare
 spec:
   ports:
-  - protocol: TCP
-    port: 8081
+  - port: 8081
     targetPort: 8081
   selector:
     app: payments
@@ -256,8 +255,7 @@ metadata:
   namespace: egs-petcare
 spec:
   ports:
-  - protocol: TCP
-    port: 5432
+  - port: 5432
     targetPort: 5432
   selector:
     app: paymentsdb
@@ -352,7 +350,7 @@ data:
                 proxy_set_header X-Forwarded-Proto $scheme;
              }
 
-            location /payments {
+             location /payment {
                 proxy_pass http://payments-service:8081;
                 proxy_set_header Host $host;
                 proxy_set_header X-Real-IP $remote_addr;
@@ -360,13 +358,63 @@ data:
                 proxy_set_header X-Forwarded-Proto $scheme;
              }
 
-             location /checkout {
+             location /admin {
                 proxy_pass http://payments-service:8081;
                 proxy_set_header Host $host;
                 proxy_set_header X-Real-IP $remote_addr;
                 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
                 proxy_set_header X-Forwarded-Proto $scheme;
              }
+
+             location /checkout/<uuid:pk>/ {
+                proxy_pass http://payments-service:8081;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+             }
+
+             location /registration {
+                proxy_pass http://payments-service:8081;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+             }
+
+             location /mb-way {
+                proxy_pass http://payments-service:8081;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+             }
+
+             
+              location /send-post-request {
+                proxy_pass http://payments-service:8081;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+             }
+
+             location /docs {
+                proxy_pass http://payments-service:8081;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+             }
+
+             location /payment_complete {
+                proxy_pass http://payments-service:8081;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+             }
+
         }
     }
 
