@@ -267,12 +267,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx-service
+  name: nginx
   namespace: egs-petcare
 spec:
+  type: ClusterIP
   ports:
-  - port: 80
-    targetPort: 80
+    name: http
+    port: 80
   selector:
     app: nginx
 
