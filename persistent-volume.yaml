@@ -1,0 +1,13 @@
+# Create Booking-db persistent volume claim
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: booking-storage-pvc
+  namespace: egs-petcare
+spec:
+  accessModes:
+    - ReadWriteOnce # only one pod on one node to write to the volume
+  resources:
+    requests:
+      storage: 1Gi
