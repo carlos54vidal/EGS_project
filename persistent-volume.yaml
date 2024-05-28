@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: booking-storage-pvc
+  name: booking-pvc
   namespace: egs-petcare
 spec:
   accessModes:

@@ -32,12 +32,6 @@ spec:
           value: "booking-db-service"
         - name: DATABASE_PORT
           value: "5432"
-        #- name: DATABASE_NAME
-        #  value: "bookingservice"
-        #- name: DATABASE_USER
-        #  value: "user"
-        #- name: DATABASE_PASSWORD
-        #  value: "password"
         envFrom:
           - secretRef:
               name: booking-credentials
@@ -64,13 +58,6 @@ spec:
         envFrom:
           - secretRef:
               name: booking-credentials
-        # env:  # environment variables 
-        # - name: POSTGRES_DB  
-        #   value: "bookingservice"
-        # - name: POSTGRES_USER
-        #   value: "user"
-        # - name: POSTGRES_PASSWORD
-        #   value: "password"
         resources:
           requests:
             memory: "32Mi"
@@ -82,12 +69,11 @@ spec:
         - containerPort: 5432
         volumeMounts:
         - name: booking-storage
-          mountPath: /var/lib/postgresql/data 
+          mountPath: /var/lib/postgresql/booking-data
       volumes:
       - name: booking-storage
-        emptyDir: {}
-        #persistentVolumeClaim:
-        #  claimName: booking-storage-pvc
+        persistentVolumeClaim:
+          claimName: booking-pvc
         
 # Create payments-api deployment
 ---
@@ -174,7 +160,7 @@ spec:
         - containerPort: 5432
         volumeMounts:
         - name: db-data
-          mountPath: /var/lib/postgresql/data 
+          mountPath: /var/lib/postgresql/payments_data
       volumes:
       - name: db-data
         emptyDir: {}
