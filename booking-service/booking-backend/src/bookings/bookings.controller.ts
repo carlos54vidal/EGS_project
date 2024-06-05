@@ -16,6 +16,7 @@ import {
   ApiTags,
   ApiQuery,
   ApiBody,
+  ApiResponse,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { BookingsService } from './bookings.service';
@@ -40,6 +41,13 @@ export class BookingsController {
     summary: 'Add a new booking',
     description: 'Create a new booking',
   })
+  @ApiResponse({
+    status: 201,
+    description: 'The booking has been successfully booked.',
+    type: CreateBookingDto,
+  })
+  @ApiResponse({ status: 409, description: ' Scheduling conflict.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized. Invalid API-KEY.' })
   @ApiBody({ type: CreateBookingDto })
   create(@Req() request: Request, @Body() data: CreateBookingDto) {
     const key = this.getApiKey(request);
@@ -53,6 +61,7 @@ export class BookingsController {
     description:
       'This endpoint allows retrieving bookings based on different criteria like month, year, date, or datetime range.',
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized. Invalid API-KEY.' })
   @ApiQuery({
     name: 'month',
     type: 'number',
@@ -128,6 +137,7 @@ export class BookingsController {
     required: true,
     description: 'The duration of the booking in seconds.',
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized. Invalid API-KEY.' })
   checkAvailability(
     @Req() request: Request,
     @Query('datetime') datetime: string,
@@ -142,6 +152,7 @@ export class BookingsController {
   }
 
   @Get('free-slots')
+  @ApiResponse({ status: 401, description: 'Unauthorized. Invalid API-KEY.' })
   @UseGuards(AuthGuard('headerapikey'))
   @ApiOperation({
     summary: 'Get free booking slots',
@@ -168,6 +179,8 @@ export class BookingsController {
   }
 
   @Get(':bookingId')
+  @ApiResponse({ status: 404, description: 'The booking was not found.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized. Invalid API-KEY.' })
   @UseGuards(AuthGuard('headerapikey'))
   @ApiOperation({
     summary: 'Get a booking by uuid',
@@ -185,6 +198,14 @@ export class BookingsController {
     summary: 'Edit a booking by uuid',
     description: 'Update an existing booking by Id',
   })
+  @ApiResponse({
+    status: 200,
+    description: 'The booking has been successfully edited.',
+    type: CreateBookingDto,
+  })
+  @ApiResponse({ status: 409, description: ' Scheduling conflict.' })
+  @ApiResponse({ status: 404, description: 'The booking id does not exist.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized. Invalid API-KEY.' })
   update(
     @Req() request: Request,
     @Param('bookingId') id: string,
@@ -195,6 +216,12 @@ export class BookingsController {
   }
 
   @Delete(':bookingId')
+  @ApiResponse({
+    status: 200,
+    description: 'Booking was deleted successfully.',
+  })
+  @ApiResponse({ status: 404, description: 'The booking id does not exist.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized. Invalid API-KEY.' })
   @UseGuards(AuthGuard('headerapikey'))
   @ApiOperation({
     summary: 'Remove a booking by uuid',

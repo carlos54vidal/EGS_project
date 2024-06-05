@@ -131,8 +131,8 @@ export class ClientsService {
 
         if (bookingFound) {
           return {
-            statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-            message: 'Sorry, this client has bookings.',
+            statusCode: HttpStatus.CONFLICT,
+            message: 'Sorry, this client still has bookings.',
           };
         } else {
           await this.clientRepository.delete(id);

@@ -18,3 +18,4 @@ COPY . .
 EXPOSE 8040
 
 CMD [ "npm", "run", "start" ]
+

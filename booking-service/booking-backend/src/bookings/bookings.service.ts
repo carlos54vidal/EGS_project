@@ -19,12 +19,12 @@ export class BookingsService {
   async create(key: string, data: CreateBookingDto) {
     const { bookingId, datetime, duration, description } = data;
 
-    console.log('\nkey: ', key);
+    // console.log('\nkey: ', key);
 
-    console.log('bookingId: ', bookingId);
-    console.log('datetime: ', datetime);
-    console.log('duration: ', duration);
-    console.log('description: ', description);
+    // console.log('bookingId: ', bookingId);
+    // console.log('datetime: ', datetime);
+    // console.log('duration: ', duration);
+    // console.log('description: ', description);
 
     try {
       if (!bookingId) {
