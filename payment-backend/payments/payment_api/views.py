@@ -181,6 +181,7 @@ class SendPostRequestViewSet(viewsets.ViewSet):
 
             current_datetime = datetime.datetime.now().isoformat()
             payload = {
+            {    
                 "merchant": {
                     "terminalId": 66779,
                     "channel": "web",
@@ -202,6 +203,7 @@ class SendPostRequestViewSet(viewsets.ViewSet):
                         "MBWAY"
                     ]                        
                 }                    
+            }
             }
             url = "https://api.qly.sibspayments.com/sibs/spg/v2/payments"
             headers = {
@@ -227,7 +229,9 @@ class SendPostRequestViewSet(viewsets.ViewSet):
                         "Authorization": f"Digest {transaction_signature}"
                     }
                     second_payload = {
-                        "customerPhone": phone_value
+                    {
+                        "customerPhone": f"351#{phone_value}"
+                    }
                     }
                     second_response = requests.post(second_url, headers=second_headers, json=second_payload)
 
