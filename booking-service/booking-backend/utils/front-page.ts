@@ -23,6 +23,21 @@ export const frontPage = `
                 height: 70vh; /* Ensure the body takes the full height of the viewport */
                 margin: 0; /* Remove default margin */
             }
+            .alert {
+                display: none;
+                background-color: #4CAF50; /* Green */
+                color: white;
+                padding: 15px;
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                width: auto;
+                max-width: 300px;
+                text-align: center;
+                z-index: 1000;
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
             .center-box {
                 background: white;
                 padding: 50px;
@@ -111,6 +126,7 @@ export const frontPage = `
         </style>
     </head>
     <body>
+        <div class="alert" id="alert"></div>
         <h1>Booking Service</h1>
         <div class="center-box">
             <div style="flex-grow: 1;">
@@ -164,10 +180,17 @@ export const frontPage = `
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Success:', data);
+                console.log(data);
+                document.getElementById('cname').value = ''
+                const alert = document.getElementById('alert');
+                alert.textContent = "Sign up successful ! Your API key is: " + data.apikey;
+                alert.style.display = 'block';
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 7000); // Hide the alert after 7 seconds
             })
             .catch((error) => {
-                console.error('Error:', error);
+                //console.error('Error:', error);
             });
         });
         </script>
